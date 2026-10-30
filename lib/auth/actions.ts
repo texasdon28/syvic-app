@@ -18,7 +18,10 @@ export async function login(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    const message = error.code === 'email_not_confirmed'
+      ? 'Confirm your email using the link in your inbox, then log in.'
+      : 'Could not log in. Check your email and password and try again.';
+    redirect(`/login?error=${encodeURIComponent(message)}`);
   }
 
   redirect('/dashboard');
