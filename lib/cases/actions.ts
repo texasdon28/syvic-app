@@ -7,7 +7,7 @@ import {
 } from '@/lib/supabase/server';
 import type { WorkflowType } from '@/lib/types/database';
 
-const workflowTypes: WorkflowType[] = ['eviction', 'repair_remedy', 'small_claims'];
+const workflowTypes: WorkflowType[] = ['eviction', 'small_claims'];
 
 async function getOrCreateOrganization(userId: string, userEmail?: string) {
   const supabase = await createServerSupabaseClient();

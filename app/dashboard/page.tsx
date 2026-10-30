@@ -23,7 +23,12 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false })
     .limit(5);
 
-  const activeCases = cases?.filter((c) => c.status !== 'closed') || [];
+  const { count: totalCount, error: totalError } = await supabase
+    .from('cases').select('id', { count: 'exact', head: true })
+    .in('organization_id', orgIds);
+  const { count: activeCount, error: activeError } = await supabase
+    .from('cases').select('id', { count: 'exact', head: true })
+    .in('organization_id', orgIds).neq('status', 'closed');
 
   return (
     <main className="flex-1">
@@ -59,7 +64,7 @@ export default async function DashboardPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{activeCases.length}</div>
+                <div className="text-3xl font-bold">{activeError ? 'Unavailable' : activeCount ?? 0}</div>
               </CardContent>
             </Card>
 
@@ -73,7 +78,7 @@ export default async function DashboardPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">{cases?.length || 0}</div>
+                <div className="text-3xl font-bold">{totalError ? 'Unavailable' : totalCount ?? 0}</div>
               </CardContent>
             </Card>
 
@@ -81,13 +86,13 @@ export default async function DashboardPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm font-medium text-gray-600">
-                    Upcoming Deadlines
+                    Deadline Tracking
                   </CardTitle>
                   <Clock className="h-4 w-4 text-gray-400" />
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">0</div>
+                <div className="text-sm text-gray-600">Not yet available</div>
               </CardContent>
             </Card>
           </div>

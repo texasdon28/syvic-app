@@ -30,7 +30,7 @@ export default function NewCasePage({
             <div>
               <h1 className="text-4xl font-bold">New case</h1>
               <p className="mt-2 max-w-2xl text-gray-600">
-                Capture the essential facts now. You can add documents, events, and packet details after the case is created.
+                Save the essential facts for your Harris County case.
               </p>
             </div>
           </div>
@@ -68,8 +68,7 @@ export default function NewCasePage({
                       className="mt-1 flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     >
                       <option value="eviction">Eviction</option>
-                      <option value="repair_remedy">Repair and remedy</option>
-                      <option value="small_claims">Small claims / debt</option>
+                      <option value="small_claims">Small claims</option>
                     </select>
                   </div>
                   <div>
