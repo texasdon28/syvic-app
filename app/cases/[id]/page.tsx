@@ -58,9 +58,9 @@ export default async function CaseDetailPage({
               <p className="mt-2 text-gray-600">{formatWorkflow(caseItem.workflow_type)}</p>
             </div>
             <Button asChild>
-              <Link href="/deadlines">
-                <Calendar className="mr-2 h-4 w-4" />
-                Check deadlines
+              <Link href={`/cases/${caseItem.id}/packet`}>
+                <FileText className="mr-2 h-4 w-4" />
+                Prepare packet
               </Link>
             </Button>
           </div>
