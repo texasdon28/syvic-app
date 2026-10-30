@@ -1,7 +1,10 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import {
+  createServerSupabaseClient,
+  createServiceSupabaseClient,
+} from '@/lib/supabase/server';
 
 export async function login(formData: FormData) {
   const email = formData.get('email') as string;
@@ -42,19 +45,42 @@ export async function signup(formData: FormData) {
     return { error: authError.message };
   }
 
-  if (authData.user) {
-    const { error: orgError } = await supabase.from('organizations').insert({
-      name: `${name}'s Organization`,
-      type: 'individual_landlord',
-    }).select().single();
+  if (!authData.session) {
+    redirect('/login?message=confirm-email');
+  }
 
-    if (!orgError && authData.user) {
-      await supabase.from('organization_members').insert({
-        organization_id: (await supabase.from('organizations').select('id').order('created_at', { ascending: false }).limit(1).single()).data?.id,
+  if (authData.user && authData.session) {
+    const serviceSupabase = createServiceSupabaseClient();
+    const { data: organization, error: orgError } = await serviceSupabase
+      .from('organizations')
+      .insert({
+        name: `${name}'s Organization`,
+        type: 'individual_landlord',
+      })
+      .select('id')
+      .single();
+
+    if (orgError || !organization) {
+      return { error: orgError?.message || 'Could not create organization' };
+    }
+
+    const { error: memberError } = await serviceSupabase
+      .from('organization_members')
+      .insert({
+        organization_id: organization.id,
         user_id: authData.user.id,
         role: 'owner',
       });
+
+    if (memberError) {
+      return { error: memberError.message };
     }
+
+    await serviceSupabase.from('subscription_status').insert({
+      organization_id: organization.id,
+      plan: 'free',
+      status: 'active',
+    });
   }
 
   redirect('/dashboard');

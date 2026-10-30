@@ -4,9 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Container } from '@/components/container';
 import { MarketingHeader } from '@/components/marketing-header';
 import { MarketingFooter } from '@/components/marketing-footer';
+import { createCheckoutSession } from '@/lib/billing/actions';
 import { Check } from 'lucide-react';
 
-export default function PricingPage() {
+export default function PricingPage({
+  searchParams,
+}: {
+  searchParams?: { error?: string; checkout?: string };
+}) {
   return (
     <div className="flex min-h-screen flex-col">
       <MarketingHeader />
@@ -25,6 +30,16 @@ export default function PricingPage() {
 
         <section className="border-b border-gray-200 py-20">
           <Container>
+            {searchParams?.error && (
+              <div className="mx-auto mb-8 max-w-3xl rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+                Checkout is not ready yet: {decodeURIComponent(searchParams.error)}
+              </div>
+            )}
+            {searchParams?.checkout === 'cancelled' && (
+              <div className="mx-auto mb-8 max-w-3xl rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
+                Checkout was cancelled. You can choose a plan whenever you are ready.
+              </div>
+            )}
             <div className="grid gap-8 lg:grid-cols-3">
               <Card className="border-gray-200">
                 <CardHeader>
@@ -107,9 +122,12 @@ export default function PricingPage() {
                       <span className="text-sm">10GB storage</span>
                     </li>
                   </ul>
-                  <Button className="w-full" asChild>
-                    <Link href="/signup">Get started</Link>
-                  </Button>
+                  <form action={createCheckoutSession}>
+                    <input type="hidden" name="plan" value="pro" />
+                    <Button type="submit" className="w-full">
+                      Start Pro
+                    </Button>
+                  </form>
                 </CardContent>
               </Card>
 
@@ -151,9 +169,12 @@ export default function PricingPage() {
                       <span className="text-sm">50GB storage</span>
                     </li>
                   </ul>
-                  <Button className="w-full" variant="outline" asChild>
-                    <Link href="/signup">Get started</Link>
-                  </Button>
+                  <form action={createCheckoutSession}>
+                    <input type="hidden" name="plan" value="team" />
+                    <Button type="submit" className="w-full" variant="outline">
+                      Start Team
+                    </Button>
+                  </form>
                 </CardContent>
               </Card>
             </div>
