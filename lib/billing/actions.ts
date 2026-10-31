@@ -4,6 +4,7 @@ import { createServerSupabaseClient, createServiceSupabaseClient } from '@/lib/s
 import { getAppUrl } from '@/lib/auth/app-url';
 import { isPaidPlan, plans, priceEnvironmentKey } from './plans';
 import { getStripe } from './stripe';
+import { CheckoutBusyError, withCheckoutLock } from './checkout-lock';
 
 async function billingOwner() {
   const supabase = await createServerSupabaseClient();
@@ -38,37 +39,40 @@ export async function createCheckoutSession(formData: FormData) {
     if (!price.active || price.currency !== 'usd' || price.unit_amount !== plans[plan][interval] * 100
       || price.recurring?.interval !== (interval === 'annual' ? 'year' : 'month')
       || price.recurring.interval_count !== 1) throw new Error('Invalid configured price');
-    let customerId = organization.stripe_customer_id as string | null;
-    if (!customerId) {
-      const customer = await stripe.customers.create({ email: user.email, name: organization.name,
-        metadata: { organization_id: organization.id } }, { idempotencyKey: `syvic-customer-${organization.id}` });
-      customerId = customer.id;
-      const { error } = await service.from('organizations').update({ stripe_customer_id: customerId }).eq('id', organization.id);
-      if (error) throw new Error('Could not save billing customer');
-    }
-    const subscriptions = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 100 });
-    existingSubscription = subscriptions.has_more || subscriptions.data.some(s => !['canceled', 'incomplete_expired'].includes(s.status));
-    if (!existingSubscription) {
-      const open = await stripe.checkout.sessions.list({ customer: customerId, status: 'open', limit: 100 });
-      if (open.has_more) throw new Error('Too many pending sessions');
-      for (const session of open.data) {
-        if (session.mode !== 'subscription') continue;
-        if (session.metadata?.plan === plan && session.metadata?.interval === interval && session.url) {
-          checkoutUrl = session.url;
-          break;
+    await withCheckoutLock(service, organization.id, async () => {
+      let customerId = organization.stripe_customer_id as string | null;
+      if (!customerId) {
+        const customer = await stripe.customers.create({ email: user.email, name: organization.name,
+          metadata: { organization_id: organization.id } }, { idempotencyKey: `syvic-customer-${organization.id}` });
+        customerId = customer.id;
+        const { error } = await service.from('organizations').update({ stripe_customer_id: customerId }).eq('id', organization.id);
+        if (error) throw new Error('Could not save billing customer');
+      }
+      const subscriptions = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 100 });
+      existingSubscription = subscriptions.has_more || subscriptions.data.some(s => !['canceled', 'incomplete_expired'].includes(s.status));
+      if (!existingSubscription) {
+        const open = await stripe.checkout.sessions.list({ customer: customerId, status: 'open', limit: 100 });
+        if (open.has_more) throw new Error('Too many pending sessions');
+        for (const session of open.data) {
+          if (session.mode !== 'subscription') continue;
+          if (!checkoutUrl && session.metadata?.plan === plan && session.metadata?.interval === interval && session.url) {
+            checkoutUrl = session.url;
+            continue;
+          }
+          await stripe.checkout.sessions.expire(session.id);
         }
-        await stripe.checkout.sessions.expire(session.id);
+        if (!checkoutUrl) {
+          const metadata = { organization_id: organization.id, plan, interval };
+          const session = await stripe.checkout.sessions.create({ mode: 'subscription', customer: customerId,
+            line_items: [{ price: priceId, quantity: 1 }], metadata, subscription_data: { metadata },
+            success_url: `${getAppUrl()}/settings?billing=processing`, cancel_url: `${getAppUrl()}/pricing?checkout=cancelled` },
+            { idempotencyKey: `syvic-checkout-${organization.id}-${plan}-${interval}-${Math.floor(Date.now() / 300000)}` });
+          checkoutUrl = session.url;
+        }
       }
-      if (!checkoutUrl) {
-        const metadata = { organization_id: organization.id, plan, interval };
-        const session = await stripe.checkout.sessions.create({ mode: 'subscription', customer: customerId,
-          line_items: [{ price: priceId, quantity: 1 }], metadata, subscription_data: { metadata },
-          success_url: `${getAppUrl()}/settings?billing=processing`, cancel_url: `${getAppUrl()}/pricing?checkout=cancelled` },
-          { idempotencyKey: `syvic-checkout-${organization.id}-${plan}-${interval}-${Math.floor(Date.now() / 300000)}` });
-        checkoutUrl = session.url;
-      }
-    }
-  } catch {
+    });
+  } catch (error) {
+    if (error instanceof CheckoutBusyError) redirect('/pricing?error=checkout-busy');
     redirect('/pricing?error=checkout-unavailable');
   }
   if (existingSubscription) redirect('/settings?billing=existing');

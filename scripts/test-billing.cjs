@@ -37,3 +37,39 @@ assert.throws(() => stripe.getStripe(), /not enabled/);
 stripeEnv.STRIPE_SECRET_KEY = 'sk_test_fixture';
 assert.equal(stripe.getStripe().key, 'sk_test_fixture');
 console.log('Billing catalog, annual pricing, price mapping, and live-payment guard tests passed.');
+
+(async () => {
+  const { withCheckoutLock, CheckoutBusyError } = load('lib/billing/checkout-lock.ts');
+  let held = false;
+  let acquisitions = 0;
+  const calls = [];
+  const service = { async rpc(name, args) {
+    calls.push({ name, args });
+    if (name === 'acquire_billing_checkout_lock') {
+      if (held) return { data: null, error: null };
+      held = true;
+      return { data: `token-${++acquisitions}`, error: null };
+    }
+    held = false;
+    return { data: true, error: null };
+  } };
+  let finish;
+  const pending = withCheckoutLock(service, 'workspace', () => new Promise(resolve => { finish = resolve; }));
+  await Promise.resolve();
+  let duplicateWorkRan = false;
+  await assert.rejects(withCheckoutLock(service, 'workspace', async () => { duplicateWorkRan = true; }), CheckoutBusyError);
+  assert.equal(duplicateWorkRan, false);
+  finish('checkout-url');
+  assert.equal(await pending, 'checkout-url');
+  assert.equal(held, false);
+  await assert.rejects(withCheckoutLock(service, 'workspace', async () => { throw new Error('Stripe failed'); }), /Stripe failed/);
+  assert.equal(held, false);
+  assert.equal(calls.filter(x => x.name === 'release_billing_checkout_lock').length, 2);
+  assert.equal(calls.at(-1).args.p_token, 'token-2');
+  let ran = false;
+  await assert.rejects(withCheckoutLock({ rpc: async () => ({ data: null, error: new Error('offline') }) }, 'workspace', async () => { ran = true; }), /unavailable/);
+  assert.equal(ran, false);
+  let count = 0;
+  await assert.rejects(withCheckoutLock({ rpc: async () => ++count === 1 ? { data: 'token', error: null } : { data: false, error: null } }, 'workspace', async () => 'url'), /release failed/);
+  console.log('Checkout concurrency, failure cleanup, and fail-closed tests passed.');
+})().catch(error => { console.error(error); process.exitCode = 1; });

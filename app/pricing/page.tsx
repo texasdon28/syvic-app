@@ -24,7 +24,9 @@ export default function PricingPage({ searchParams }: {
     </Container></section><section className="py-12"><Container>
       <p className="mb-6 text-sm text-gray-600">Preview offering. Paid document generation is not yet available for public launch.</p>
       {searchParams?.error && <p role="alert" className="mb-6 border border-red-200 bg-red-50 p-4 text-sm">
-        {searchParams.error === 'billing-owner' ? 'Only the workspace owner can manage billing.' : 'Checkout is not available yet. No payment has been taken.'}</p>}
+        {searchParams.error === 'billing-owner' ? 'Only the workspace owner can manage billing.'
+          : searchParams.error === 'checkout-busy' ? 'Another checkout request is being processed for this workspace. Return to your existing checkout or try again shortly. If this continues, contact support.'
+          : 'Checkout is not available yet. No payment has been taken.'}</p>}
       {searchParams?.checkout === 'cancelled' && <p className="mb-6 text-sm">Checkout cancelled. No subscription was started.</p>}
       <div className="grid gap-6 md:grid-cols-3">{(Object.keys(plans) as PaidPlan[]).map(key => {
         const plan = plans[key];
