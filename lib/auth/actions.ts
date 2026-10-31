@@ -1,6 +1,7 @@
 'use server';
 
 import { redirect } from 'next/navigation';
+import { getAppUrl } from '@/lib/auth/app-url';
 import {
   createServerSupabaseClient,
   createServiceSupabaseClient,
@@ -38,8 +39,9 @@ export async function signup(formData: FormData) {
     email,
     password,
     options: {
+      emailRedirectTo: `${getAppUrl()}/auth/callback`,
       data: {
-                name,
+        name,
       },
     },
   });
