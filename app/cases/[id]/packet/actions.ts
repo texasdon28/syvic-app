@@ -16,3 +16,20 @@ export async function savePacket(id: string, input: unknown) {
   revalidatePath(`/cases/${id}/packet`);
   return { saved: true };
 }
+
+export async function authorizePacketPrint(id: string, expectedTitle: string, expectedPacket: unknown) {
+  const db = await createServerSupabaseClient();
+  const { data: { user } } = await db.auth.getUser();
+  if (!user) return { error: 'Please log in again.' };
+  const { data: item } = await db.from('cases').select('organization_id').eq('id', id).single();
+  if (!item) return { error: 'Case unavailable.' };
+  const { data, error } = await db.rpc('document_allowance', {
+    p_organization_id: item.organization_id, p_case_id: id,
+    p_expected_title: expectedTitle, p_expected_packet: expectedPacket,
+  });
+  if (error || !data) return { error: 'Document allowance unavailable. Please try again.' };
+  if (!data.allowed) return { error: data.reason === 'changed' ? 'This packet changed. Refresh and try again.'
+    : data.reason === 'inactive' ? 'An active subscription is required for a new document.' : 'Monthly document allowance reached. See Settings for your reset date.' };
+  revalidatePath('/settings');
+  return { allowed: true };
+}

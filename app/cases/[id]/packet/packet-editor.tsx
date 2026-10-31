@@ -3,7 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Plus, Trash2, Printer, Save, Download } from 'lucide-react';
 import { Packet } from '@/lib/cases/packet';
-import { savePacket } from './actions';
+import { savePacket, authorizePacketPrint } from './actions';
 
 export function PacketEditor({ id, title, caseNumber, initial }: { id: string; title: string; caseNumber: string | null; initial: Packet }) {
   const [packet, setPacket] = useState(initial);
@@ -18,6 +18,30 @@ export function PacketEditor({ id, title, caseNumber, initial }: { id: string; t
     catch { setMessage('Could not save. Please try again.'); }
     finally { setBusy(false); }
   }
+  async function print() {
+    setBusy(true);
+    try {
+      const result = await authorizePacketPrint(id, title, packet);
+      if (result.error) setMessage(result.error);
+      else { setMessage('Document ready'); window.print(); }
+    } catch { setMessage('Could not prepare document. Please try again.'); }
+    finally { setBusy(false); }
+  }
+  async function download() {
+    setBusy(true);
+    try {
+      const response = await fetch(`/cases/${id}/packet/pdf`, { method: 'POST' });
+      if (!response.ok) { setMessage(await response.text()); return; }
+      const url = URL.createObjectURL(await response.blob());
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'syvic-case-packet.pdf';
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+      setMessage('PDF downloaded');
+    } catch { setMessage('Could not download. Please try again.'); }
+    finally { setBusy(false); }
+  }
   const money = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(n);
   let balance = 0;
   const sections = ['ledger', 'chronology', 'evidence'] as const;
@@ -28,8 +52,8 @@ export function PacketEditor({ id, title, caseNumber, initial }: { id: string; t
       <Link href={`/cases/${id}`} className="underline">Back to case</Link>
       <button disabled={busy || review} onClick={save} className="inline-flex items-center gap-2 border px-3 py-2 disabled:opacity-50"><Save size={16}/>Save draft</button>
       <button disabled={busy || dirty} onClick={()=>setReview(!review)} className="border px-3 py-2 disabled:opacity-50">{review ? 'Edit packet' : 'Review packet'}</button>
-      {review && <button onClick={()=>window.print()} className="inline-flex items-center gap-2 border px-3 py-2"><Printer size={16}/>Print / Save PDF</button>}
-      {review && <a href={`/cases/${id}/packet/pdf`} className="inline-flex items-center gap-2 border px-3 py-2"><Download size={16}/>Download PDF</a>}
+      {review && <button disabled={busy} onClick={print} className="inline-flex items-center gap-2 border px-3 py-2 disabled:opacity-50"><Printer size={16}/>Print / Save PDF</button>}
+      {review && <button disabled={busy} onClick={download} className="inline-flex items-center gap-2 border px-3 py-2 disabled:opacity-50"><Download size={16}/>Download PDF</button>}
       <span role="status">{message}</span>
     </div>
     <h1 className="break-words text-2xl font-bold">{title}</h1>
