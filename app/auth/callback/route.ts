@@ -12,7 +12,12 @@ export async function GET(request: NextRequest) {
     const supabase = await createServerSupabaseClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(new URL('/dashboard', origin));
+      const { error: setupError } = await supabase.rpc('ensure_my_workspace');
+      if (!setupError) return NextResponse.redirect(new URL('/dashboard', origin));
+      await supabase.auth.signOut();
+      const destination = new URL('/login', origin);
+      destination.searchParams.set('error', 'Account setup could not finish. Please try logging in again.');
+      return NextResponse.redirect(destination);
     }
   }
 

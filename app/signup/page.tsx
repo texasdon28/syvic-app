@@ -8,7 +8,7 @@ import { Logo } from '@/components/logo';
 import { signup } from '@/lib/auth/actions';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
-export default async function SignupPage() {
+export default async function SignupPage({ searchParams }: { searchParams?: { error?: string } }) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -30,6 +30,9 @@ export default async function SignupPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {searchParams?.error && <p role="alert" className="mb-4 border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+            Could not create your account. Please check your details and try again.
+          </p>}
           <form action={signup} className="space-y-4">
             <div>
               <Label htmlFor="name">Full name</Label>
