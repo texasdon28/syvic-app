@@ -12,8 +12,11 @@ export default async function SettingsPage({ searchParams }: { searchParams?: { 
     .select('organization_id, role').eq('user_id', user.id) : { data: null };
   const membership = memberships?.length === 1 ? memberships[0] : null;
   const { data: subscription } = membership ? await supabase.from('subscription_status')
-    .select('plan, status, current_period_end').eq('organization_id', membership.organization_id).maybeSingle() : { data: null };
+    .select('plan, status, current_period_end, billing_interval, cancel_at_period_end').eq('organization_id', membership.organization_id).maybeSingle() : { data: null };
   const allowance = membership ? await getAllowance(membership.organization_id) : null;
+  const date = (value: string) => new Date(value).toLocaleDateString('en-US', {
+    timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric',
+  });
   return (
     <main className="flex-1">
       <section className="border-b border-gray-200 py-12">
@@ -30,9 +33,13 @@ export default async function SettingsPage({ searchParams }: { searchParams?: { 
           <div className="max-w-2xl">
             <h2 className="text-xl font-semibold">Billing</h2>
             <p className="mt-3 text-sm">Plan: {subscription?.plan || 'free'} | Status: {subscription?.status || 'No subscription'}</p>
+            {subscription?.billing_interval && <p className="mt-2 text-sm">Billing: {subscription.billing_interval === 'annual' ? 'Annual' : 'Monthly'}</p>}
+            {subscription?.cancel_at_period_end && subscription.current_period_end && subscription.status === 'active'
+              && <p className="mt-3 text-sm" role="status">Cancels {date(subscription.current_period_end)} (UTC). Your monthly document allowance remains available until then.</p>}
+            {subscription?.status === 'past_due' && <p className="mt-3 text-sm" role="alert">Payment is overdue. Update your payment method in Manage billing to resume new document generation.</p>}
             {allowance ? <div className="mt-5 border-y py-4 text-sm space-y-2">
               <p>{allowance.used} of {allowance.limit} documents used this month. {allowance.remaining} remaining.</p>
-              {allowance.resetsAt && <p>Resets {new Date(allowance.resetsAt).toLocaleDateString('en-US', { timeZone: 'UTC', year: 'numeric', month: 'long', day: 'numeric' })} (UTC).</p>}
+              {allowance.resetsAt && <p>Resets {date(allowance.resetsAt)} (UTC).</p>}
               <p className="text-gray-600">Each saved packet version counts as one document. Repeat downloads do not use another credit. Monthly allowances do not roll over.</p>
             </div> : <p className="mt-4 text-sm">Document usage is temporarily unavailable.</p>}
             {searchParams?.billing === 'processing' && <p className="mt-3 text-sm" role="status">Checkout returned. Your plan updates after payment confirmation. Refresh to check its status.</p>}
