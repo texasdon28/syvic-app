@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Plus, Trash2, Printer, Save } from 'lucide-react';
+import { Plus, Trash2, Printer, Save, Download } from 'lucide-react';
 import { Packet } from '@/lib/cases/packet';
 import { savePacket } from './actions';
 
@@ -29,6 +29,7 @@ export function PacketEditor({ id, title, caseNumber, initial }: { id: string; t
       <button disabled={busy || review} onClick={save} className="inline-flex items-center gap-2 border px-3 py-2 disabled:opacity-50"><Save size={16}/>Save draft</button>
       <button disabled={busy || dirty} onClick={()=>setReview(!review)} className="border px-3 py-2 disabled:opacity-50">{review ? 'Edit packet' : 'Review packet'}</button>
       {review && <button onClick={()=>window.print()} className="inline-flex items-center gap-2 border px-3 py-2"><Printer size={16}/>Print / Save PDF</button>}
+      {review && <a href={`/cases/${id}/packet/pdf`} className="inline-flex items-center gap-2 border px-3 py-2"><Download size={16}/>Download PDF</a>}
       <span role="status">{message}</span>
     </div>
     <h1 className="break-words text-2xl font-bold">{title}</h1>
