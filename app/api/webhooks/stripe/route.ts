@@ -49,7 +49,7 @@ export async function POST(request: Request) {
       plan: selection.plan, billing_interval: selection.interval, stripe_subscription_id: subscription.id, status,
       current_period_start: item.current_period_start ? new Date(item.current_period_start * 1000).toISOString() : null,
       current_period_end: item.current_period_end ? new Date(item.current_period_end * 1000).toISOString() : null,
-      cancel_at_period_end: subscription.cancel_at_period_end }, { onConflict: 'organization_id' });
+      cancel_at_period_end: subscription.cancel_at_period_end || subscription.cancel_at === item.current_period_end }, { onConflict: 'organization_id' });
     if (error) throw new Error('Subscription storage failed');
   } catch {
     return NextResponse.json({ error: 'Subscription synchronization failed' }, { status: 500 });
