@@ -40,7 +40,7 @@ export default function TermsPage() {
               <div>
                 <h2 className="text-2xl font-semibold text-black">3. No Legal Advice</h2>
                 <p className="mt-4">
-                  SYVIC does not provide legal advice. The information and tools provided do not constitute legal advice and should not be relied upon as a substitute for consultation with a licensed attorney.
+                  SYVIC is not a law firm and does not provide legal advice or legal representation. Our software, documents, and information are not a substitute for the advice of an attorney.
                 </p>
                 <p className="mt-4">
                   Use of SYVIC does not create an attorney-client relationship. You should always consult with legal counsel for advice specific to your situation.

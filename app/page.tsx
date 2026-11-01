@@ -16,10 +16,10 @@ export default function HomePage() {
           <Container>
             <div className="mx-auto max-w-3xl text-center">
               <h1 className="text-5xl font-bold tracking-tight sm:text-6xl">
-                Court-ready packets. Faster filing. Cleaner outcomes.
+                SYVIC document organization
               </h1>
               <p className="mt-6 text-lg text-gray-600">
-                SYVIC helps landlords and property managers assemble eviction, repair/remedy, and small-claims packets with procedural checklists and export-ready PDFs—without giving legal advice.
+                Organize landlord records into factual packets and find official court resources. SYVIC is not a law firm and does not provide legal advice or representation.
               </p>
               <div className="mt-10 flex items-center justify-center gap-4">
                 <Button size="lg" asChild>
@@ -50,7 +50,7 @@ export default function HomePage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm text-gray-600">
-                    Upload, tag, and number exhibits automatically. Keep all evidence organized and court-ready.
+                    Create an exhibit index from your records. Supporting files remain separate from the packet.
                   </p>
                 </CardContent>
               </Card>

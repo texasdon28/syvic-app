@@ -9,12 +9,12 @@ export default function TemplatesPage() {
     <section className="border-b py-8"><Container>
       <h1 className="text-3xl font-bold">Document catalog</h1>
       <p className="mt-2 text-gray-600">Harris County landlord records</p>
-      <p className="mt-4 max-w-3xl text-sm">Available records are bundled in one factual packet. One saved packet version uses one document credit, not one credit per section. Notices and petitions awaiting legal review cannot be generated.</p>
+      <p className="mt-4 max-w-3xl text-sm">Available records are bundled in one factual packet. One saved packet version uses one document credit, not one credit per section. Notices and petitions awaiting template review cannot be generated. Template review is an internal product check, not legal advice or representation for customers.</p>
     </Container></section>
     <section className="py-8"><Container>
       <ul className="divide-y border-y">{documentCatalog.map(item => <li key={item.id} className="grid gap-3 py-5 md:grid-cols-[1fr_180px_180px] md:items-center">
         <div className="min-w-0"><h2 className="flex items-center gap-2 font-semibold"><FileText className="h-4 w-4 shrink-0" />{item.name}</h2><p className="mt-1 text-sm text-gray-600">{item.description}</p></div>
-        <span className={`text-sm ${item.status === 'available' ? 'text-emerald-700' : 'text-amber-800'}`}>{item.status === 'available' ? 'Available in packet' : 'Awaiting legal review'}</span>
+        <span className={`text-sm ${item.status === 'available' ? 'text-emerald-700' : 'text-amber-800'}`}>{item.status === 'available' ? 'Available in packet' : 'Template review pending'}</span>
         {item.status === 'available' ? <Button asChild variant="outline" className="w-full md:w-auto"><Link href={`/cases/new/landlord?document=${item.id}`}>Start intake<ArrowRight className="ml-2 h-4 w-4" /></Link></Button>
           : <span className="flex items-center gap-2 text-sm text-gray-500"><LockKeyhole className="h-4 w-4" />Generation unavailable</span>}
       </li>)}</ul>

@@ -37,7 +37,7 @@ export default function AboutPage() {
               <div>
                 <h2 className="text-2xl font-semibold text-black">What We Do</h2>
                 <p className="mt-4">
-                  SYVIC provides tools for organizing evidence, tracking deadlines, and generating court-ready document packets for eviction, repair/remedy, and small claims cases in Texas Justice Court.
+                  SYVIC provides factual record organization, PDF packets, and links to official court resources. Legal notice and petition preparation remain unavailable pending independent template and product-compliance review.
                 </p>
                 <p className="mt-4">
                   We compile procedural information from publicly available sources, including Texas statutes and Rules of Civil Procedure. All deadline calculations and checklists are provided as informational resources only and should be verified with legal counsel.
@@ -67,7 +67,7 @@ export default function AboutPage() {
               <div>
                 <h2 className="text-2xl font-semibold text-black">Our Approach to Compliance</h2>
                 <p className="mt-4">
-                  We take compliance seriously. SYVIC is designed to be a neutral procedural tool. We provide deadline information with statutory citations. We generate document organization structures. We never suggest legal strategy or provide case-specific legal advice.
+                  SYVIC is not a law firm. We organize user-entered records and link to official resources. We do not select legal strategy, determine filing eligibility, or provide case-specific legal advice.
                 </p>
                 <p className="mt-4">
                   All procedural information should be verified independently before relying on it for court filings or legal proceedings.

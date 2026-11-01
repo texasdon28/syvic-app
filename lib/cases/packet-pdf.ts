@@ -1,5 +1,6 @@
 import { PDFDocument, StandardFonts } from 'pdf-lib';
 import type { Packet } from './packet';
+import { LEGAL_DISCLOSURE, PDF_LEGAL_FOOTER } from '@/lib/legal/disclosures';
 
 export async function buildPacketPdf(title: string, packet: Packet) {
   const doc = await PDFDocument.create();
@@ -30,6 +31,7 @@ export async function buildPacketPdf(title: string, packet: Packet) {
     line('SYVIC | Case preparation packet',true,12);
     line(title,true,18); line(section,true,15);
     line('User-entered records; facts and amounts have not been independently verified.',false,9);
+    line(LEGAL_DISCLOSURE,false,9);
     y-=12;
     if (index===0) {
       let cents=0;
@@ -49,7 +51,10 @@ export async function buildPacketPdf(title: string, packet: Packet) {
       packet.evidence.forEach(r=> { line(r.label,true); line(r.description); y-=8; });
     }
   });
-  doc.getPages().forEach((p,i)=>p.drawText(`SYVIC | Page ${i+1} of ${doc.getPageCount()}`,{x:48,y:30,size:9,font}));
+  doc.getPages().forEach((p,i)=> {
+    p.drawText(PDF_LEGAL_FOOTER,{x:48,y:44,size:8,font});
+    p.drawText(`SYVIC | Page ${i+1} of ${doc.getPageCount()}`,{x:48,y:30,size:9,font});
+  });
   doc.setTitle(clean(title));
   return doc.save();
 }

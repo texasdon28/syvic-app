@@ -1,3 +1,5 @@
+import { LEGAL_DISCLOSURE } from '@/lib/legal/disclosures';
+
 export interface DeadlineRule {
   id: string;
   workflow: 'eviction' | 'repair_remedy' | 'small_claims';
@@ -127,6 +129,6 @@ export function getDeadlinesByWorkflow(workflow: 'eviction' | 'repair_remedy' | 
 }
 
 export const DISCLAIMER_TEXT = {
-  short: 'SYVIC provides procedural information only and does not constitute legal advice.',
-  long: 'SYVIC provides procedural information and document organization tools only. This information does not constitute legal advice and should not be relied upon as a substitute for consultation with a licensed attorney. Deadlines may vary based on specific circumstances, court rules, and judicial discretion. Always verify current requirements with the relevant Justice Court and consult with legal counsel before taking action.',
+  short: 'SYVIC is not a law firm and does not provide legal advice. Not a substitute for the advice of an attorney.',
+  long: `${LEGAL_DISCLOSURE} Verify case-specific requirements with the relevant court and a licensed attorney.`,
 };

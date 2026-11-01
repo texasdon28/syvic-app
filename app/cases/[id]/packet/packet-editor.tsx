@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Plus, Trash2, Printer, Save, Download } from 'lucide-react';
 import { Packet } from '@/lib/cases/packet';
+import { LEGAL_DISCLOSURE } from '@/lib/legal/disclosures';
 import { savePacket, authorizePacketPrint } from './actions';
 
 export function PacketEditor({ id, title, caseNumber, initial }: { id: string; title: string; caseNumber: string | null; initial: Packet }) {
@@ -59,6 +60,7 @@ export function PacketEditor({ id, title, caseNumber, initial }: { id: string; t
     <h1 className="break-words text-2xl font-bold">{title}</h1>
     {caseNumber && <p>Case number: {caseNumber}</p>}
     <p className="my-3 text-sm text-gray-600">Prepared from user-entered records. Amounts and events have not been independently verified.</p>
+    <p className="my-3 text-sm text-gray-800">{LEGAL_DISCLOSURE}</p>
     {sections.map(section=><section key={section} className="packet-section mt-8">
       <h2 className="mb-3 text-xl">{labels[section]}</h2>
       {!review ? <fieldset disabled={busy} className="space-y-3">
