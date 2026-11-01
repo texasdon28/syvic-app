@@ -30,7 +30,7 @@ export default async function CasesPage() {
             <div>
               <h1 className="text-4xl font-bold">Cases</h1>
               <p className="mt-2 text-gray-600">
-                Manage your eviction, repair/remedy, and small claims cases
+                Manage your eviction and small claims cases
               </p>
             </div>
             <Button asChild>

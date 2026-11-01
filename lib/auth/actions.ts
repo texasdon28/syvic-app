@@ -1,7 +1,10 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { getAppUrl } from '@/lib/auth/app-url';
+import {
+  createServerSupabaseClient,
+} from '@/lib/supabase/server';
 
 export async function login(formData: FormData) {
   const email = formData.get('email') as string;
@@ -15,7 +18,16 @@ export async function login(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    const message = error.code === 'email_not_confirmed'
+      ? 'Confirm your email using the link in your inbox, then log in.'
+      : 'Could not log in. Check your email and password and try again.';
+    redirect(`/login?error=${encodeURIComponent(message)}`);
+  }
+
+  const { error: setupError } = await supabase.rpc('ensure_my_workspace');
+  if (setupError) {
+    await supabase.auth.signOut();
+    redirect('/login?error=Account%20setup%20could%20not%20finish.%20Please%20try%20logging%20in%20again.');
   }
 
   redirect('/dashboard');
@@ -32,29 +44,25 @@ export async function signup(formData: FormData) {
     email,
     password,
     options: {
+      emailRedirectTo: `${getAppUrl()}/auth/callback`,
       data: {
-                name,
+        name,
       },
     },
   });
 
   if (authError) {
-    return { error: authError.message };
+    redirect('/signup?error=signup-failed');
   }
 
-  if (authData.user) {
-    const { error: orgError } = await supabase.from('organizations').insert({
-      name: `${name}'s Organization`,
-      type: 'individual_landlord',
-    }).select().single();
+  if (!authData.session) {
+    redirect('/login?message=confirm-email');
+  }
 
-    if (!orgError && authData.user) {
-      await supabase.from('organization_members').insert({
-        organization_id: (await supabase.from('organizations').select('id').order('created_at', { ascending: false }).limit(1).single()).data?.id,
-        user_id: authData.user.id,
-        role: 'owner',
-      });
-    }
+  const { error: setupError } = await supabase.rpc('ensure_my_workspace');
+  if (setupError) {
+    await supabase.auth.signOut();
+    redirect('/login?error=Account%20setup%20could%20not%20finish.%20Please%20try%20logging%20in%20again.');
   }
 
   redirect('/dashboard');

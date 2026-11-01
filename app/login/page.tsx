@@ -8,7 +8,9 @@ import { Logo } from '@/components/logo';
 import { login } from '@/lib/auth/actions';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
-export default async function LoginPage() {
+export default async function LoginPage({ searchParams }: {
+  searchParams?: { message?: string; error?: string };
+}) {
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -30,6 +32,16 @@ export default async function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {searchParams?.message === 'confirm-email' && (
+            <p role="status" className="mb-4 rounded-md border border-gray-200 bg-gray-50 p-3 text-sm">
+              Check your inbox and spam folder for the confirmation email. Confirm your email, then return here to log in.
+            </p>
+          )}
+          {searchParams?.error && (
+            <p role="alert" className="mb-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+              {searchParams.error}
+            </p>
+          )}
           <form action={login} className="space-y-4">
             <div>
               <Label htmlFor="email">Email</Label>

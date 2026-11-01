@@ -1,212 +1,50 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Container } from '@/components/container';
 import { MarketingHeader } from '@/components/marketing-header';
 import { MarketingFooter } from '@/components/marketing-footer';
+import { createCheckoutSession } from '@/lib/billing/actions';
+import { plans, PaidPlan } from '@/lib/billing/plans';
 import { Check } from 'lucide-react';
 
-export default function PricingPage() {
-  return (
-    <div className="flex min-h-screen flex-col">
-      <MarketingHeader />
-
-      <main className="flex-1">
-        <section className="border-b border-gray-200 py-20">
-          <Container>
-            <div className="mx-auto max-w-2xl text-center">
-              <h1 className="text-5xl font-bold">Simple, transparent pricing</h1>
-              <p className="mt-6 text-lg text-gray-600">
-                Choose the plan that fits your workflow. Upgrade or downgrade anytime.
-              </p>
-            </div>
-          </Container>
-        </section>
-
-        <section className="border-b border-gray-200 py-20">
-          <Container>
-            <div className="grid gap-8 lg:grid-cols-3">
-              <Card className="border-gray-200">
-                <CardHeader>
-                  <CardTitle>Free</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-5xl font-bold">$0</span>
-                    <span className="text-gray-600">/month</span>
-                  </div>
-                  <p className="mt-4 text-sm text-gray-600">
-                    For individual landlords getting started with case organization.
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <ul className="space-y-3">
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">1 active case at a time</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">Basic document uploads</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">3 PDF exports per month</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">Texas deadlines reference</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">500MB storage</span>
-                    </li>
-                  </ul>
-                  <Button className="w-full" variant="outline" asChild>
-                    <Link href="/signup">Get started</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="border-2 border-black shadow-lg">
-                <CardHeader>
-                  <div className="inline-block rounded-full bg-black px-3 py-1 text-xs font-semibold text-white">
-                    MOST POPULAR
-                  </div>
-                  <CardTitle className="mt-4">Pro</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-5xl font-bold">$49</span>
-                    <span className="text-gray-600">/month</span>
-                  </div>
-                  <p className="mt-4 text-sm text-gray-600">
-                    For active property managers handling multiple cases.
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <ul className="space-y-3">
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">Unlimited cases</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">Unlimited document uploads</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">Unlimited PDF exports</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">Custom templates</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">Priority support</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">10GB storage</span>
-                    </li>
-                  </ul>
-                  <Button className="w-full" asChild>
-                    <Link href="/signup">Get started</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="border-gray-200">
-                <CardHeader>
-                  <CardTitle>Team</CardTitle>
-                  <div className="mt-4">
-                    <span className="text-5xl font-bold">$149</span>
-                    <span className="text-gray-600">/month</span>
-                  </div>
-                  <p className="mt-4 text-sm text-gray-600">
-                    For property management companies with multiple team members.
-                  </p>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <ul className="space-y-3">
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">Everything in Pro</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">Up to 10 team members</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">Role-based access control</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">Admin dashboard</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">Dedicated support</span>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <Check className="h-5 w-5 flex-shrink-0" />
-                      <span className="text-sm">50GB storage</span>
-                    </li>
-                  </ul>
-                  <Button className="w-full" variant="outline" asChild>
-                    <Link href="/signup">Get started</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
-          </Container>
-        </section>
-
-        <section className="border-b border-gray-200 py-20">
-          <Container>
-            <div className="mx-auto max-w-3xl">
-              <h2 className="text-center text-3xl font-bold">Frequently asked questions</h2>
-
-              <div className="mt-12 space-y-8">
-                <div>
-                  <h3 className="text-lg font-semibold">Can I switch plans anytime?</h3>
-                  <p className="mt-2 text-gray-600">
-                    Yes. You can upgrade or downgrade your plan at any time. Changes take effect immediately, and billing is prorated.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold">What happens if I exceed my plan limits?</h3>
-                  <p className="mt-2 text-gray-600">
-                    On the Free plan, you'll be prompted to upgrade when you reach case or export limits. Pro and Team plans have no case or export limits.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold">Do you offer annual billing?</h3>
-                  <p className="mt-2 text-gray-600">
-                    Not yet, but annual billing with a discount will be available soon. Contact us if you're interested.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold">What payment methods do you accept?</h3>
-                  <p className="mt-2 text-gray-600">
-                    We accept all major credit cards through Stripe. ACH and wire transfers are available for Team plans upon request.
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold">Is there a refund policy?</h3>
-                  <p className="mt-2 text-gray-600">
-                    Yes. If you're not satisfied within the first 14 days, contact us for a full refund. No questions asked.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Container>
-        </section>
-      </main>
-
-      <MarketingFooter />
-    </div>
-  );
+export default function PricingPage({ searchParams }: {
+  searchParams?: { error?: string; checkout?: string; interval?: string };
+}) {
+  const interval = searchParams?.interval === 'annual' ? 'annual' : 'monthly';
+  return <div className="flex min-h-screen flex-col"><MarketingHeader />
+    <main className="flex-1"><section className="border-b py-12"><Container>
+      <h1 className="text-3xl font-bold">SYVIC plans</h1>
+      <p className="mt-3 text-gray-600">Harris County eviction and small claims document preparation.</p>
+      <nav aria-label="Billing interval" className="mt-6 inline-flex border-b gap-6">
+        {(['monthly', 'annual'] as const).map(value => <Link key={value} href={`/pricing?interval=${value}`}
+          aria-current={interval === value ? 'page' : undefined}
+          className={`pb-3 text-sm ${interval === value ? 'border-b-2 border-black font-semibold' : 'text-gray-600'}`}>
+          {value === 'monthly' ? 'Monthly' : 'Annual - save 2 months'}</Link>)}
+      </nav>
+    </Container></section><section className="py-12"><Container>
+      <p className="mb-6 text-sm text-gray-600">Preview offering. Paid document generation is not yet available for public launch.</p>
+      {searchParams?.error && <p role="alert" className="mb-6 border border-red-200 bg-red-50 p-4 text-sm">
+        {searchParams.error === 'billing-owner' ? 'Only the workspace owner can manage billing.'
+          : searchParams.error === 'checkout-busy' ? 'Another checkout request is being processed for this workspace. Return to your existing checkout or try again shortly. If this continues, contact support.'
+          : 'Checkout is not available yet. No payment has been taken.'}</p>}
+      {searchParams?.checkout === 'cancelled' && <p className="mb-6 text-sm">Checkout cancelled. No subscription was started.</p>}
+      <div className="grid gap-6 md:grid-cols-3">{(Object.keys(plans) as PaidPlan[]).map(key => {
+        const plan = plans[key];
+        return <article key={key} className="rounded-lg border p-6 flex flex-col">
+          <h2 className="text-xl font-semibold">{plan.name}</h2>
+          <p className="mt-4"><span className="text-3xl font-bold">${plan[interval].toLocaleString('en-US')}</span>
+            <span className="text-sm text-gray-600">/{interval === 'annual' ? 'year' : 'month'}</span></p>
+          <ul className="my-6 space-y-3 text-sm">
+            <li className="flex gap-2"><Check className="h-4 w-4 shrink-0" />{plan.documents} documents per month</li>
+            <li className="flex gap-2"><Check className="h-4 w-4 shrink-0" />Case workspace and PDF downloads</li>
+            <li className="flex gap-2"><Check className="h-4 w-4 shrink-0" />{interval === 'annual' ? 'Billed annually; monthly document allowance' : 'Billed monthly'}</li>
+          </ul>
+          <form action={createCheckoutSession} className="mt-auto">
+            <input type="hidden" name="plan" value={key} /><input type="hidden" name="interval" value={interval} />
+            <Button className="w-full" type="submit">Choose {plan.name}</Button>
+          </form>
+        </article>;
+      })}</div>
+      <p className="mt-8 text-sm text-gray-600">Annual plans do not include unlimited generation. Document allowances renew monthly and do not roll over. Court filing fees are separate. SYVIC is not a law firm.</p>
+    </Container></section></main><MarketingFooter /></div>;
 }
