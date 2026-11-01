@@ -17,6 +17,7 @@ export default function NewCasePage({
     <main className="flex-1">
       <section className="border-b border-gray-200 py-10">
         <Container>
+          <p className="mb-6 text-sm"><Link href="/cases/new/landlord" className="font-medium underline">Start Harris County landlord intake</Link></p>
           <Button variant="ghost" size="sm" asChild>
             <Link href="/cases">
               <ArrowLeft className="mr-2 h-4 w-4" />

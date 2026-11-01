@@ -5,6 +5,7 @@ import { Container } from '@/components/container';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { landlordIntakeSchema } from '@/lib/cases/landlord-intake';
 
 function formatWorkflow(value: string) {
   return value
@@ -36,6 +37,8 @@ export default async function CaseDetailPage({
   const tenant = Array.isArray(caseItem.tenants)
     ? caseItem.tenants[0]
     : caseItem.tenants;
+  const parsedIntake = landlordIntakeSchema.safeParse(caseItem.metadata?.landlord_intake);
+  const intake = parsedIntake.success ? parsedIntake.data : null;
 
   return (
     <main className="flex-1">
@@ -71,6 +74,19 @@ export default async function CaseDetailPage({
         <Container>
           <div className="grid gap-6 lg:grid-cols-[2fr_1fr]">
             <div className="space-y-6">
+              {intake && <section className="border-b pb-6">
+                <h2 className="text-lg font-semibold">Landlord intake record</h2>
+                <p className="mt-2 text-sm text-gray-600">Harris County residential records. No notice or petition has been generated or filed. These facts have not been independently verified.</p>
+                <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-2">
+                  {[
+                    ['Landlord', intake.landlord_name], ['Lease', intake.lease_kind], ['Recorded reason', intake.reason.replace(/_/g, ' ')],
+                    ['Other parties', intake.additional_parties || 'Not entered'], ['Notice', intake.notice_status.replace(/_/g, ' ')],
+                    ['Recorded delivery date', intake.notice_date || 'Not entered'], ['Recorded delivery method', intake.notice_method || 'Not entered'],
+                    ['Subsidized rent', intake.subsidized], ['Federal protections', intake.federal_coverage], ['Bankruptcy', intake.bankruptcy], ['Military considerations', intake.military],
+                  ].map(([label, value]) => <div key={label} className="min-w-0"><dt className="text-gray-500">{label}</dt><dd className="break-words">{value}</dd></div>)}
+                </dl>
+                <Link className="mt-5 inline-block text-sm underline" href="/templates/filing-checklist">Harris County preparation resources</Link>
+              </section>}
               <Card className="border-gray-200">
                 <CardHeader>
                   <CardTitle>Case summary</CardTitle>
@@ -128,6 +144,7 @@ export default async function CaseDetailPage({
                   {property ? (
                     <div>
                       <p>{property.address_line1}</p>
+                      {property.address_line2 && <p>{property.address_line2}</p>}
                       <p>
                         {property.city}, {property.state} {property.zip_code}
                       </p>

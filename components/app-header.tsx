@@ -12,7 +12,7 @@ import { logout } from '@/lib/auth/actions';
 const navigation = [
   { name: 'Dashboard', href: '/dashboard' },
   { name: 'Cases', href: '/cases' },
-  { name: 'Templates', href: '/templates' },
+  { name: 'Documents', href: '/templates' },
   { name: 'Deadlines', href: '/deadlines' },
   { name: 'Settings', href: '/settings' },
 ];
@@ -55,6 +55,8 @@ export function AppHeader() {
 
           <button
             type="button"
+            aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
+            aria-expanded={mobileMenuOpen}
             className="md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
