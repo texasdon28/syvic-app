@@ -14,7 +14,7 @@ export default function PricingPage({ searchParams }: {
   return <div className="flex min-h-screen flex-col"><MarketingHeader />
     <main className="flex-1"><section className="border-b py-12"><Container>
       <h1 className="text-3xl font-bold">SYVIC plans</h1>
-      <p className="mt-3 text-gray-600">Harris County eviction and small claims document preparation.</p>
+      <p className="mt-3 text-gray-600">Factual landlord records. Initial guided coverage: Harris County residential properties.</p>
       <nav aria-label="Billing interval" className="mt-6 inline-flex border-b gap-6">
         {(['monthly', 'annual'] as const).map(value => <Link key={value} href={`/pricing?interval=${value}`}
           aria-current={interval === value ? 'page' : undefined}
@@ -22,7 +22,7 @@ export default function PricingPage({ searchParams }: {
           {value === 'monthly' ? 'Monthly' : 'Annual - save 2 months'}</Link>)}
       </nav>
     </Container></section><section className="py-12"><Container>
-      <p className="mb-6 text-sm text-gray-600">Preview offering. Paid document generation is not yet available for public launch.</p>
+      <p className="mb-6 text-sm text-gray-600">Preview offering. Checkout uses Stripe test mode; real payments are disabled. A free account can save and review records, but new packet exports require an active paid subscription. A saved packet version uses one credit when first prepared for download or print; repeat downloads use no additional credit.</p>
       {searchParams?.error && <p role="alert" className="mb-6 border border-red-200 bg-red-50 p-4 text-sm">
         {searchParams.error === 'billing-owner' ? 'Only the workspace owner can manage billing.'
           : searchParams.error === 'checkout-busy' ? 'Another checkout request is being processed for this workspace. Return to your existing checkout or try again shortly. If this continues, contact support.'
@@ -35,7 +35,7 @@ export default function PricingPage({ searchParams }: {
           <p className="mt-4"><span className="text-3xl font-bold">${plan[interval].toLocaleString('en-US')}</span>
             <span className="text-sm text-gray-600">/{interval === 'annual' ? 'year' : 'month'}</span></p>
           <ul className="my-6 space-y-3 text-sm">
-            <li className="flex gap-2"><Check className="h-4 w-4 shrink-0" />{plan.documents} documents per month</li>
+            <li className="flex gap-2"><Check className="h-4 w-4 shrink-0" />{plan.documents} document credits per month</li>
             <li className="flex gap-2"><Check className="h-4 w-4 shrink-0" />Case workspace and PDF downloads</li>
             <li className="flex gap-2"><Check className="h-4 w-4 shrink-0" />{interval === 'annual' ? 'Billed annually; monthly document allowance' : 'Billed monthly'}</li>
           </ul>
