@@ -101,3 +101,14 @@ export async function updatePassword(formData: FormData) {
   await supabase.auth.signOut();
   redirect('/login?message=password-updated');
 }
+
+export async function verifyPasswordRecovery(formData: FormData) {
+  const tokenHash = String(formData.get('token_hash') || '');
+  if (!/^[a-f0-9]{40,128}$/i.test(tokenHash)) {
+    redirect('/forgot-password?error=This%20reset%20link%20is%20invalid.%20Request%20a%20new%20one.');
+  }
+  const supabase = await createServerSupabaseClient();
+  const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' });
+  if (error) redirect('/forgot-password?error=This%20reset%20link%20has%20expired%20or%20was%20already%20used.%20Request%20a%20new%20one.');
+  redirect('/reset-password');
+}

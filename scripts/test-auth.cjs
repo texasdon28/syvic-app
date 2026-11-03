@@ -28,6 +28,8 @@ function load(file, modules) {
   let updateInput;
   let currentUser = { id: 'fixture' };
   let updateError = null;
+  let verifyInput;
+  let verifyError = null;
   const client = {
     auth: {
       async signUp(input) { signupInput = input; return signupResult; },
@@ -37,6 +39,7 @@ function load(file, modules) {
       async resetPasswordForEmail(email, options) { resetInput = { email, options }; return { error: new Error('Private provider failure') }; },
       async getUser() { return { data: { user: currentUser }, error: null }; },
       async updateUser(input) { updateInput = input; return { error: updateError }; },
+      async verifyOtp(input) { verifyInput = input; return { error: verifyError }; },
     },
     async rpc(name) {
       assert.equal(name, 'ensure_my_workspace');
@@ -104,5 +107,16 @@ function load(file, modules) {
   await assert.rejects(auth.updatePassword(passwordFields('long-password', 'long-password')), redirectsTo('/login?message=password-updated'));
   assert.equal(updateInput.password, 'long-password');
   assert.equal(signouts, 3);
+  const recoveryFields = value => ({ get: () => value });
+  await assert.rejects(auth.verifyPasswordRecovery(recoveryFields('invalid')), error => error.location.startsWith('/forgot-password?error='));
+  assert.equal(verifyInput, undefined);
+  await assert.rejects(auth.verifyPasswordRecovery(recoveryFields('a'.repeat(64))), redirectsTo('/reset-password'));
+  assert.equal(verifyInput.type, 'recovery');
+  assert.equal(verifyInput.token_hash, 'a'.repeat(64));
+  verifyError = new Error('Expired token with private details');
+  await assert.rejects(auth.verifyPasswordRecovery(recoveryFields('b'.repeat(64))), error => error.location.startsWith('/forgot-password?error=') && !error.location.includes('private'));
+  const recoveryPage = fs.readFileSync('app/auth/recovery/page.tsx', 'utf8');
+  assert.ok(recoveryPage.includes('action={verifyPasswordRecovery}'));
+  assert.ok(!recoveryPage.includes('await '), 'GET must not consume recovery tokens');
   console.log('Signup confirmation, workspace setup, login failure, and callback redirect tests passed.');
 })().catch(error => { console.error(error); process.exitCode = 1; });
