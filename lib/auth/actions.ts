@@ -73,3 +73,31 @@ export async function logout() {
   await supabase.auth.signOut();
   redirect('/');
 }
+
+export async function requestPasswordReset(formData: FormData) {
+  const email = String(formData.get('email') || '').trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    redirect('/forgot-password?error=Enter%20a%20valid%20email%20address.');
+  }
+  const supabase = await createServerSupabaseClient();
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${getAppUrl()}/auth/callback?next=/reset-password`,
+  });
+  // Keep the response identical for unknown accounts and provider failures.
+  redirect('/forgot-password?sent=1');
+}
+
+export async function updatePassword(formData: FormData) {
+  const password = String(formData.get('password') || '');
+  const confirmation = String(formData.get('confirmation') || '');
+  if (password.length < 8 || password !== confirmation) {
+    redirect('/reset-password?error=Use%20at%20least%208%20characters%20and%20matching%20passwords.');
+  }
+  const supabase = await createServerSupabaseClient();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) redirect('/forgot-password?error=Request%20a%20new%20reset%20link.');
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) redirect('/reset-password?error=Could%20not%20update%20your%20password.%20Try%20a%20different%20password%20or%20request%20a%20new%20link.');
+  await supabase.auth.signOut();
+  redirect('/login?message=password-updated');
+}

@@ -32,6 +32,11 @@ export default async function LoginPage({ searchParams }: {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {searchParams?.message === 'password-updated' && (
+            <p role="status" className="mb-4 rounded-md border border-gray-200 bg-gray-50 p-3 text-sm">
+              Your password has been updated. Log in with your new password.
+            </p>
+          )}
           {searchParams?.message === 'confirm-email' && (
             <p role="status" className="mb-4 rounded-md border border-gray-200 bg-gray-50 p-3 text-sm">
               Check your inbox and spam folder for the confirmation email. Confirm your email, then return here to log in.
@@ -71,6 +76,10 @@ export default async function LoginPage({ searchParams }: {
               Log in
             </Button>
           </form>
+
+          <div className="mt-4 text-right text-sm">
+            <Link href="/forgot-password" className="font-medium text-black hover:underline">Forgot password?</Link>
+          </div>
 
           <div className="mt-6 text-center text-sm text-gray-600">
             Don't have an account?{' '}

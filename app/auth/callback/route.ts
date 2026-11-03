@@ -12,6 +12,9 @@ export async function GET(request: NextRequest) {
     const supabase = await createServerSupabaseClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
+      if (request.nextUrl.searchParams.get('next') === '/reset-password') {
+        return NextResponse.redirect(new URL('/reset-password', origin));
+      }
       const { error: setupError } = await supabase.rpc('ensure_my_workspace');
       if (!setupError) return NextResponse.redirect(new URL('/dashboard', origin));
       await supabase.auth.signOut();
@@ -22,6 +25,9 @@ export async function GET(request: NextRequest) {
   }
 
   const destination = new URL('/login', origin);
+  if (request.nextUrl.searchParams.get('next') === '/reset-password') {
+    return NextResponse.redirect(new URL('/forgot-password?error=Request%20a%20new%20reset%20link.%20Open%20it%20in%20the%20same%20browser%20where%20you%20requested%20it.', origin));
+  }
   destination.searchParams.set('error',
     'This confirmation link could not be used. Try logging in if your email is already confirmed, or request a new confirmation link.');
   return NextResponse.redirect(destination);

@@ -24,12 +24,19 @@ function load(file, modules) {
   let setupCalls = 0;
   let signouts = 0;
   let signupInput;
+  let resetInput;
+  let updateInput;
+  let currentUser = { id: 'fixture' };
+  let updateError = null;
   const client = {
     auth: {
       async signUp(input) { signupInput = input; return signupResult; },
       async signInWithPassword() { return { error: signinError }; },
       async signOut() { signouts++; },
       async exchangeCodeForSession() { return { error: exchangeError }; },
+      async resetPasswordForEmail(email, options) { resetInput = { email, options }; return { error: new Error('Private provider failure') }; },
+      async getUser() { return { data: { user: currentUser }, error: null }; },
+      async updateUser(input) { updateInput = input; return { error: updateError }; },
     },
     async rpc(name) {
       assert.equal(name, 'ensure_my_workspace');
@@ -75,5 +82,27 @@ function load(file, modules) {
   assert.match(await callback.GET(request), /\/login\?error=This/);
   assert.equal(setupCalls, count);
   assert.match(await callback.GET({ nextUrl: new URL(`${origin}/auth/callback`) }), /\/login\?error=This/);
+  const recovery = { nextUrl: new URL(`${origin}/auth/callback?code=fixture&next=/reset-password`) };
+  assert.match(await callback.GET(recovery), /\/forgot-password\?error=/);
+  exchangeError = null;
+  assert.equal(await callback.GET(recovery), `${origin}/reset-password`);
+  assert.equal(setupCalls, count);
+  await assert.rejects(auth.requestPasswordReset(fields), redirectsTo('/forgot-password?sent=1'));
+  assert.equal(resetInput.email, 'fixture@example.invalid');
+  assert.equal(resetInput.options.redirectTo, `${origin}/auth/callback?next=/reset-password`);
+  const passwordFields = (password, confirmation) => ({ get: key => ({ password, confirmation })[key] });
+  await assert.rejects(auth.updatePassword(passwordFields('short', 'short')), error => error.location.startsWith('/reset-password?error='));
+  await assert.rejects(auth.updatePassword(passwordFields('long-password', 'different')), error => error.location.startsWith('/reset-password?error='));
+  assert.equal(updateInput, undefined);
+  currentUser = null;
+  await assert.rejects(auth.updatePassword(passwordFields('long-password', 'long-password')), error => error.location.startsWith('/forgot-password?error='));
+  assert.equal(updateInput, undefined);
+  currentUser = { id: 'fixture' };
+  updateError = new Error('Private provider failure');
+  await assert.rejects(auth.updatePassword(passwordFields('long-password', 'long-password')), error => !error.location.includes('Private') && error.location.startsWith('/reset-password?error='));
+  updateError = null;
+  await assert.rejects(auth.updatePassword(passwordFields('long-password', 'long-password')), redirectsTo('/login?message=password-updated'));
+  assert.equal(updateInput.password, 'long-password');
+  assert.equal(signouts, 3);
   console.log('Signup confirmation, workspace setup, login failure, and callback redirect tests passed.');
 })().catch(error => { console.error(error); process.exitCode = 1; });
