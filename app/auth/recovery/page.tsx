@@ -10,7 +10,7 @@ export const metadata: Metadata = { robots: { index: false, follow: false }, ref
 
 export default function RecoveryPage({ searchParams }: { searchParams?: { token_hash?: string } }) {
   const tokenHash = searchParams?.token_hash || '';
-  const valid = /^[a-f0-9]{40,128}$/i.test(tokenHash);
+  const valid = /^(?:pkce_)?[a-f0-9]{40,128}$/i.test(tokenHash);
   return <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-8">
     <div className="mb-8"><Logo variant="full" /></div>
     <Card className="w-full max-w-md border-gray-200">

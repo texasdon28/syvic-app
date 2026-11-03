@@ -113,10 +113,18 @@ function load(file, modules) {
   await assert.rejects(auth.verifyPasswordRecovery(recoveryFields('a'.repeat(64))), redirectsTo('/reset-password'));
   assert.equal(verifyInput.type, 'recovery');
   assert.equal(verifyInput.token_hash, 'a'.repeat(64));
+  const prefixedToken = 'pkce_' + 'c'.repeat(56);
+  await assert.rejects(auth.verifyPasswordRecovery(recoveryFields(prefixedToken)), redirectsTo('/reset-password'));
+  assert.equal(verifyInput.token_hash, prefixedToken, 'Preserve the provider prefix for verification');
   verifyError = new Error('Expired token with private details');
   await assert.rejects(auth.verifyPasswordRecovery(recoveryFields('b'.repeat(64))), error => error.location.startsWith('/forgot-password?error=') && !error.location.includes('private'));
   const recoveryPage = fs.readFileSync('app/auth/recovery/page.tsx', 'utf8');
   assert.ok(recoveryPage.includes('action={verifyPasswordRecovery}'));
   assert.ok(!recoveryPage.includes('await '), 'GET must not consume recovery tokens');
+  const landingPattern = recoveryPage.match(/const valid = (\/.*\/i)\.test/)[1];
+  const landingRegex = vm.runInNewContext(landingPattern);
+  assert.ok(landingRegex.test(prefixedToken), 'Landing page must accept Supabase PKCE token hashes');
+  assert.ok(landingRegex.test('a'.repeat(64)));
+  assert.ok(!landingRegex.test('invalid'));
   console.log('Signup confirmation, workspace setup, login failure, and callback redirect tests passed.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

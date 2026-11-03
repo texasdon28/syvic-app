@@ -104,7 +104,7 @@ export async function updatePassword(formData: FormData) {
 
 export async function verifyPasswordRecovery(formData: FormData) {
   const tokenHash = String(formData.get('token_hash') || '');
-  if (!/^[a-f0-9]{40,128}$/i.test(tokenHash)) {
+  if (!/^(?:pkce_)?[a-f0-9]{40,128}$/i.test(tokenHash)) {
     redirect('/forgot-password?error=This%20reset%20link%20is%20invalid.%20Request%20a%20new%20one.');
   }
   const supabase = await createServerSupabaseClient();
