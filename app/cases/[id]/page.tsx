@@ -51,10 +51,10 @@ export default async function CaseDetailPage({
             </Link>
           </Button>
           <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-4xl font-bold">{caseItem.title}</h1>
-                <span className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-3">
+                <h1 className="min-w-0 text-3xl font-bold sm:text-4xl">{caseItem.title}</h1>
+                <span className="shrink-0 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800">
                   {caseItem.status}
                 </span>
               </div>
