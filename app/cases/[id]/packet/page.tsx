@@ -3,7 +3,8 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { emptyPacket, packetSchema } from '@/lib/cases/packet';
 import { PacketEditor } from './packet-editor';
 
-export default async function PacketPage({ params }: { params: { id: string } }) {
+export default async function PacketPage({ params: pendingParams }: { params: Promise<{ id: string }> }) {
+  const params = await pendingParams;
   const db = await createServerSupabaseClient();
   const { data } = await db.from('cases').select('id,title,case_number,metadata').eq('id', params.id).single();
   if (!data) notFound();

@@ -8,7 +8,8 @@ import { Logo } from '@/components/logo';
 import { signup } from '@/lib/auth/actions';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
-export default async function SignupPage({ searchParams }: { searchParams?: { error?: string } }) {
+export default async function SignupPage({ searchParams: pendingSearchParams }: { searchParams?: Promise<{ error?: string }> }) {
+  const searchParams = await pendingSearchParams;
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
 

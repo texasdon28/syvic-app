@@ -8,7 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default async function ResetPasswordPage({ searchParams }: { searchParams?: { error?: string } }) {
+export default async function ResetPasswordPage({ searchParams: pendingSearchParams }: { searchParams?: Promise<{ error?: string }> }) {
+  const searchParams = await pendingSearchParams;
   const supabase = await createServerSupabaseClient();
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user) redirect('/forgot-password?error=Request%20a%20new%20reset%20link.');

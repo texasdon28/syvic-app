@@ -1,13 +1,16 @@
 import './globals.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { LEGAL_DISCLOSURE } from '@/lib/legal/disclosures';
 import { ConnectionStatus } from '@/components/connection-status';
+
+export const viewport: Viewport = {
+  themeColor: '#ffffff',
+  width: 'device-width', initialScale: 1, viewportFit: 'cover',
+};
 
 export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   applicationName: 'SYVIC',
-  themeColor: '#ffffff',
-  viewport: { width: 'device-width', initialScale: 1, viewportFit: 'cover' },
   icons: { icon: '/app-icon?size=192', apple: '/app-icon?size=180' },
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   title: {

@@ -39,6 +39,14 @@ assert.equal(stripe.getStripe().key, 'sk_test_fixture');
 console.log('Billing catalog, annual pricing, price mapping, and live-payment guard tests passed.');
 
 (async () => {
+  const { requireWorkspaceCustomer } = load('lib/billing/customer.ts');
+  const customerClient = customer => ({ customers: { retrieve: async () => customer } });
+  await requireWorkspaceCustomer(customerClient({ metadata: { organization_id: 'workspace' } }), 'cus_fixture', 'workspace');
+  await assert.rejects(requireWorkspaceCustomer(customerClient({ metadata: { organization_id: 'other' } }), 'cus_fixture', 'workspace'), /unavailable/);
+  await assert.rejects(requireWorkspaceCustomer(customerClient({ metadata: {} }), 'cus_fixture', 'workspace'), /unavailable/);
+  await assert.rejects(requireWorkspaceCustomer(customerClient({ deleted: true }), 'cus_fixture', 'workspace'), /unavailable/);
+  const actions = fs.readFileSync('lib/billing/actions.ts', 'utf8');
+  assert.equal((actions.match(/await requireWorkspaceCustomer\(/g) || []).length, 2);
   const { withCheckoutLock, CheckoutBusyError } = load('lib/billing/checkout-lock.ts');
   let held = false;
   let acquisitions = 0;

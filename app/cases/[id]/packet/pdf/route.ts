@@ -3,7 +3,8 @@ import { packetSchema } from '@/lib/cases/packet';
 import { buildPacketPdf } from '@/lib/cases/packet-pdf';
 
 export const runtime = 'nodejs';
-export async function POST(_request: Request, { params }: { params: { id: string } }) {
+export async function POST(_request: Request, { params: pendingParams }: { params: Promise<{ id: string }> }) {
+  const params = await pendingParams;
   if (_request.headers.get('origin') !== new URL(_request.url).origin) {
     return new Response('Invalid request origin.', { status:403 });
   }

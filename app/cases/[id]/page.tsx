@@ -15,10 +15,11 @@ function formatWorkflow(value: string) {
 }
 
 export default async function CaseDetailPage({
-  params,
+  params: pendingParams,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const params = await pendingParams;
   const supabase = await createServerSupabaseClient();
 
   const { data: caseItem } = await supabase

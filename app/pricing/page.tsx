@@ -7,9 +7,10 @@ import { createCheckoutSession } from '@/lib/billing/actions';
 import { plans, PaidPlan } from '@/lib/billing/plans';
 import { Check } from 'lucide-react';
 
-export default function PricingPage({ searchParams }: {
-  searchParams?: { error?: string; checkout?: string; interval?: string };
+export default async function PricingPage({ searchParams: pendingSearchParams }: {
+  searchParams?: Promise<{ error?: string; checkout?: string; interval?: string }>;
 }) {
+  const searchParams = await pendingSearchParams;
   const interval = searchParams?.interval === 'annual' ? 'annual' : 'monthly';
   return <div className="flex min-h-screen flex-col"><MarketingHeader />
     <main className="flex-1"><section className="border-b py-12"><Container>

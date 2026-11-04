@@ -5,6 +5,7 @@ import { getAppUrl } from '@/lib/auth/app-url';
 import { isPaidPlan, plans, priceEnvironmentKey } from './plans';
 import { getStripe } from './stripe';
 import { CheckoutBusyError, withCheckoutLock } from './checkout-lock';
+import { requireWorkspaceCustomer } from './customer';
 
 async function billingOwner() {
   const supabase = await createServerSupabaseClient();
@@ -48,6 +49,7 @@ export async function createCheckoutSession(formData: FormData) {
         const { error } = await service.from('organizations').update({ stripe_customer_id: customerId }).eq('id', organization.id);
         if (error) throw new Error('Could not save billing customer');
       }
+      await requireWorkspaceCustomer(stripe, customerId, organization.id);
       const subscriptions = await stripe.subscriptions.list({ customer: customerId, status: 'all', limit: 100 });
       existingSubscription = subscriptions.has_more || subscriptions.data.some(s => !['canceled', 'incomplete_expired'].includes(s.status));
       if (!existingSubscription) {
@@ -85,7 +87,9 @@ export async function createBillingPortalSession() {
   if (!organization.stripe_customer_id) redirect('/pricing');
   let url: string;
   try {
-    const session = await getStripe().billingPortal.sessions.create({ customer: organization.stripe_customer_id,
+    const stripe = getStripe();
+    await requireWorkspaceCustomer(stripe, organization.stripe_customer_id, organization.id);
+    const session = await stripe.billingPortal.sessions.create({ customer: organization.stripe_customer_id,
       return_url: `${getAppUrl()}/settings` });
     url = session.url;
   } catch {

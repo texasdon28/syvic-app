@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getAllowance } from '@/lib/billing/allowance';
 
-export default async function SettingsPage({ searchParams }: { searchParams?: { billing?: string } }) {
+export default async function SettingsPage({ searchParams: pendingSearchParams }: { searchParams?: Promise<{ billing?: string }> }) {
+  const searchParams = await pendingSearchParams;
   const supabase = await createServerSupabaseClient();
   const { data: { user } } = await supabase.auth.getUser();
   const { data: memberships } = user ? await supabase.from('organization_members')

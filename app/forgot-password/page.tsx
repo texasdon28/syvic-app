@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function ForgotPasswordPage({ searchParams }: { searchParams?: { sent?: string; error?: string } }) {
+export default async function ForgotPasswordPage({ searchParams: pendingSearchParams }: { searchParams?: Promise<{ sent?: string; error?: string }> }) {
+  const searchParams = await pendingSearchParams;
   return <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-8">
     <div className="mb-8"><Logo variant="full" /></div>
     <Card className="w-full max-w-md border-gray-200">

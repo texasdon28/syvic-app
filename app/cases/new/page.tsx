@@ -8,11 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { createCase } from '@/lib/cases/actions';
 
-export default function NewCasePage({
-  searchParams,
+export default async function NewCasePage({
+  searchParams: pendingSearchParams,
 }: {
-  searchParams?: { error?: string };
+  searchParams?: Promise<{ error?: string }>;
 }) {
+  const searchParams = await pendingSearchParams;
   return (
     <main className="flex-1">
       <section className="border-b border-gray-200 py-10">

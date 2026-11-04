@@ -1,7 +1,8 @@
 import { Container } from '@/components/container';
 import { availableDocument } from '@/lib/documents/catalog';
 import { LandlordIntake } from './landlord-intake';
-export default function LandlordIntakePage({ searchParams }: { searchParams?: { document?: string } }) {
+export default async function LandlordIntakePage({ searchParams: pendingSearchParams }: { searchParams?: Promise<{ document?: string }> }) {
+  const searchParams = await pendingSearchParams;
   const selected = availableDocument(searchParams?.document || '');
   return <main className="flex-1 py-8"><Container>
     <h1 className="text-3xl font-bold">Landlord intake</h1>

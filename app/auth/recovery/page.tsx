@@ -8,7 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = { robots: { index: false, follow: false }, referrer: 'no-referrer' };
 
-export default function RecoveryPage({ searchParams }: { searchParams?: { token_hash?: string } }) {
+export default async function RecoveryPage({ searchParams: pendingSearchParams }: { searchParams?: Promise<{ token_hash?: string }> }) {
+  const searchParams = await pendingSearchParams;
   const tokenHash = searchParams?.token_hash || '';
   const valid = /^(?:pkce_)?[a-f0-9]{40,128}$/i.test(tokenHash);
   return <main className="flex min-h-screen flex-col items-center justify-center bg-gray-50 px-4 py-8">

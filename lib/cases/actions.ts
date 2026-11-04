@@ -3,58 +3,16 @@
 import { redirect } from 'next/navigation';
 import {
   createServerSupabaseClient,
-  createServiceSupabaseClient,
 } from '@/lib/supabase/server';
 import type { WorkflowType } from '@/lib/types/database';
 
 const workflowTypes: WorkflowType[] = ['eviction', 'small_claims'];
 
-async function getOrCreateOrganization(userId: string, userEmail?: string) {
+async function getOrCreateOrganization() {
   const supabase = await createServerSupabaseClient();
-  const { data: membership } = await supabase
-    .from('organization_members')
-    .select('organization_id')
-    .eq('user_id', userId)
-    .limit(1)
-    .maybeSingle();
-
-  if (membership?.organization_id) {
-    return membership.organization_id;
-  }
-
-  const serviceSupabase = createServiceSupabaseClient();
-  const { data: organization, error: orgError } = await serviceSupabase
-    .from('organizations')
-    .insert({
-      name: userEmail ? `${userEmail.split('@')[0]}'s Organization` : 'My Organization',
-      type: 'individual_landlord',
-    })
-    .select('id')
-    .single();
-
-  if (orgError || !organization) {
-    throw new Error(orgError?.message || 'Could not create organization');
-  }
-
-  const { error: memberError } = await serviceSupabase
-    .from('organization_members')
-    .insert({
-      organization_id: organization.id,
-      user_id: userId,
-      role: 'owner',
-    });
-
-  if (memberError) {
-    throw new Error(memberError.message);
-  }
-
-  await serviceSupabase.from('subscription_status').insert({
-    organization_id: organization.id,
-    plan: 'free',
-    status: 'active',
-  });
-
-  return organization.id;
+  const { data, error } = await supabase.rpc('ensure_my_workspace');
+  if (error || !data) redirect('/cases/new?error=workspace-unavailable');
+  return data as string;
 }
 
 export async function createCase(formData: FormData) {
@@ -79,7 +37,7 @@ export async function createCase(formData: FormData) {
     redirect('/cases/new?error=missing-required-fields');
   }
 
-  const organizationId = await getOrCreateOrganization(user.id, user.email);
+  const organizationId = await getOrCreateOrganization();
 
   const addressLine1 = String(formData.get('address_line1') || '').trim();
   const city = String(formData.get('city') || '').trim();

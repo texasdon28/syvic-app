@@ -120,7 +120,7 @@ function load(file, modules) {
   await assert.rejects(auth.verifyPasswordRecovery(recoveryFields('b'.repeat(64))), error => error.location.startsWith('/forgot-password?error=') && !error.location.includes('private'));
   const recoveryPage = fs.readFileSync('app/auth/recovery/page.tsx', 'utf8');
   assert.ok(recoveryPage.includes('action={verifyPasswordRecovery}'));
-  assert.ok(!recoveryPage.includes('await '), 'GET must not consume recovery tokens');
+  assert.ok(!recoveryPage.includes('await verifyPasswordRecovery'), 'GET must not consume recovery tokens');
   const landingPattern = recoveryPage.match(/const valid = (\/.*\/i)\.test/)[1];
   const landingRegex = vm.runInNewContext(landingPattern);
   assert.ok(landingRegex.test(prefixedToken), 'Landing page must accept Supabase PKCE token hashes');
