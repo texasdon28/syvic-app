@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { LEGAL_DISCLOSURE } from '@/lib/legal/disclosures';
 import { ConnectionStatus } from '@/components/connection-status';
+import { isControlledBeta } from '@/lib/launch-mode';
 
 export const viewport: Viewport = {
   themeColor: '#ffffff',
@@ -49,6 +50,7 @@ export default function RootLayout({
         <aside aria-label="Important legal disclosure" className="border-b border-gray-300 bg-gray-50 print:hidden">
           <p className="mx-auto max-w-7xl px-4 py-3 text-sm leading-6 text-gray-800 sm:px-6 lg:px-8">{LEGAL_DISCLOSURE}</p>
         </aside>
+        {isControlledBeta() && <div role="status" className="border-b border-gray-200 bg-white px-4 py-2 text-center text-xs font-medium text-gray-600 print:hidden">Controlled beta - payments disabled.</div>}
         {children}
       </body>
     </html>

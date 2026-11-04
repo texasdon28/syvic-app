@@ -51,7 +51,7 @@ export default function PrivacyPage() {
               <div>
                 <h2 className="text-2xl font-semibold text-black">5. Third-Party Services</h2>
                 <p className="mt-4">
-                  The preview uses Vercel for hosting, Supabase for authentication and storage of application records, and Stripe for test billing. These providers have their own privacy policies. Live payments remain disabled.
+                  SYVIC uses Vercel for hosting, Supabase for authentication and storage of application records, Resend for account confirmation and password-reset emails, and Stripe for test billing. These providers have their own privacy policies. Live payments remain disabled.
                 </p>
               </div>
 

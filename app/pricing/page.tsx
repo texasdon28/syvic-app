@@ -6,15 +6,17 @@ import { MarketingFooter } from '@/components/marketing-footer';
 import { createCheckoutSession } from '@/lib/billing/actions';
 import { plans, PaidPlan } from '@/lib/billing/plans';
 import { Check } from 'lucide-react';
+import { isControlledBeta, BETA_ACCESS_DESCRIPTION } from '@/lib/launch-mode';
 
 export default async function PricingPage({ searchParams: pendingSearchParams }: {
   searchParams?: Promise<{ error?: string; checkout?: string; interval?: string }>;
 }) {
   const searchParams = await pendingSearchParams;
+  const beta = isControlledBeta();
   const interval = searchParams?.interval === 'annual' ? 'annual' : 'monthly';
   return <div className="flex min-h-screen flex-col"><MarketingHeader />
     <main className="flex-1"><section className="border-b py-12"><Container>
-      <h1 className="text-3xl font-bold">SYVIC plans</h1>
+      <h1 className="text-3xl font-bold">{beta ? 'SYVIC beta' : 'SYVIC plans'}</h1>
       <p className="mt-3 text-gray-600">Factual landlord records. Initial guided coverage: Harris County residential properties.</p>
       <nav aria-label="Billing interval" className="mt-6 inline-flex border-b gap-6">
         {(['monthly', 'annual'] as const).map(value => <Link key={value} href={`/pricing?interval=${value}`}
@@ -23,9 +25,10 @@ export default async function PricingPage({ searchParams: pendingSearchParams }:
           {value === 'monthly' ? 'Monthly' : 'Annual - save 2 months'}</Link>)}
       </nav>
     </Container></section><section className="py-12"><Container>
-      <p className="mb-6 text-sm text-gray-600">Preview offering. Checkout uses Stripe test mode; real payments are disabled. A free account can save and review records, but new packet exports require an active paid subscription. A saved packet version uses one credit when first prepared for download or print; repeat downloads use no additional credit.</p>
+      {beta ? <div className="mb-6 space-y-4"><p className="text-sm text-gray-700">{BETA_ACCESS_DESCRIPTION}</p><Button asChild><Link href="/signup">Create a beta account</Link></Button><h2 className="pt-4 text-xl font-semibold">Planned subscriptions</h2><p className="text-sm text-gray-600">Subscriptions are not available for purchase during the beta.</p></div> : <p className="mb-6 text-sm text-gray-600">Preview offering. Checkout uses Stripe test mode; real payments are disabled. A free account can save and review records, but new packet exports require an active paid subscription. A saved packet version uses one credit when first prepared for download or print; repeat downloads use no additional credit.</p>}
       {searchParams?.error && <p role="alert" className="mb-6 border border-red-200 bg-red-50 p-4 text-sm">
-        {searchParams.error === 'billing-owner' ? 'Only the workspace owner can manage billing.'
+        {searchParams.error === 'beta' ? 'Subscriptions are not available for purchase during the beta. No payment has been taken.'
+          : searchParams.error === 'billing-owner' ? 'Only the workspace owner can manage billing.'
           : searchParams.error === 'checkout-busy' ? 'Another checkout request is being processed for this workspace. Return to your existing checkout or try again shortly. If this continues, contact support.'
           : 'Checkout is not available yet. No payment has been taken.'}</p>}
       {searchParams?.checkout === 'cancelled' && <p className="mb-6 text-sm">Checkout cancelled. No subscription was started.</p>}
@@ -40,10 +43,10 @@ export default async function PricingPage({ searchParams: pendingSearchParams }:
             <li className="flex gap-2"><Check className="h-4 w-4 shrink-0" />Case workspace and PDF downloads</li>
             <li className="flex gap-2"><Check className="h-4 w-4 shrink-0" />{interval === 'annual' ? 'Billed annually; monthly document allowance' : 'Billed monthly'}</li>
           </ul>
-          <form action={createCheckoutSession} className="mt-auto">
+          {beta ? <p className="mt-auto text-sm text-gray-600">Not available for purchase during beta.</p> : <form action={createCheckoutSession} className="mt-auto">
             <input type="hidden" name="plan" value={key} /><input type="hidden" name="interval" value={interval} />
             <Button className="w-full" type="submit">Choose {plan.name}</Button>
-          </form>
+          </form>}
         </article>;
       })}</div>
       <p className="mt-8 text-sm text-gray-600">Annual plans do not include unlimited generation. Document allowances renew monthly and do not roll over. Court filing fees are separate. SYVIC is not a law firm.</p>

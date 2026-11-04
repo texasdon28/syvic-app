@@ -6,6 +6,7 @@ import { isPaidPlan, plans, priceEnvironmentKey } from './plans';
 import { getStripe } from './stripe';
 import { CheckoutBusyError, withCheckoutLock } from './checkout-lock';
 import { requireWorkspaceCustomer } from './customer';
+import { isControlledBeta } from '@/lib/launch-mode';
 
 async function billingOwner() {
   const supabase = await createServerSupabaseClient();
@@ -24,6 +25,7 @@ async function billingOwner() {
 }
 
 export async function createCheckoutSession(formData: FormData) {
+  if (isControlledBeta()) redirect('/pricing?error=beta');
   const plan = String(formData.get('plan'));
   const interval = String(formData.get('interval'));
   if (!isPaidPlan(plan) || (interval !== 'monthly' && interval !== 'annual')) redirect('/pricing?error=invalid-plan');
@@ -83,6 +85,7 @@ export async function createCheckoutSession(formData: FormData) {
 }
 
 export async function createBillingPortalSession() {
+  if (isControlledBeta()) redirect('/settings?billing=beta');
   const { organization } = await billingOwner();
   if (!organization.stripe_customer_id) redirect('/pricing');
   let url: string;
