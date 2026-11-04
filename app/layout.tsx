@@ -1,8 +1,14 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { LEGAL_DISCLOSURE } from '@/lib/legal/disclosures';
+import { ConnectionStatus } from '@/components/connection-status';
 
 export const metadata: Metadata = {
+  manifest: '/manifest.webmanifest',
+  applicationName: 'SYVIC',
+  themeColor: '#ffffff',
+  viewport: { width: 'device-width', initialScale: 1, viewportFit: 'cover' },
+  icons: { icon: '/app-icon?size=192', apple: '/app-icon?size=180' },
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   title: {
     default: 'SYVIC',
@@ -36,6 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <ConnectionStatus />
         <aside aria-label="Important legal disclosure" className="border-b border-gray-300 bg-gray-50 print:hidden">
           <p className="mx-auto max-w-7xl px-4 py-3 text-sm leading-6 text-gray-800 sm:px-6 lg:px-8">{LEGAL_DISCLOSURE}</p>
         </aside>

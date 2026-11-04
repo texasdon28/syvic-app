@@ -34,9 +34,9 @@ export default async function DashboardPage() {
     <main className="flex-1">
       <section className="border-b border-gray-200 py-12">
         <Container>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-4xl font-bold">Dashboard</h1>
+              <h1 className="text-3xl font-bold sm:text-4xl">Dashboard</h1>
               <p className="mt-2 text-gray-600">
                 Overview of your cases and recent activity
               </p>
@@ -115,8 +115,8 @@ export default async function DashboardPage() {
                       href={`/cases/${caseItem.id}`}
                       className="block rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50"
                     >
-                      <div className="flex items-start justify-between">
-                        <div>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
                           <h3 className="font-semibold">{caseItem.title}</h3>
                           <p className="mt-1 text-sm text-gray-600">
                             {caseItem.workflow_type.replace('_', ' ').charAt(0).toUpperCase() +
