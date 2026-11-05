@@ -53,7 +53,9 @@ export function MarketingHeader() {
 
           <button
             type="button"
-            className="md:hidden"
+            aria-label={mobileMenuOpen ? 'Close navigation' : 'Open navigation'}
+            aria-expanded={mobileMenuOpen}
+            className="flex h-11 w-11 items-center justify-center rounded-md focus-visible:outline focus-visible:outline-2 md:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (

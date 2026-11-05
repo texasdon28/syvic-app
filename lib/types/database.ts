@@ -2,7 +2,7 @@ export type OrganizationType = 'property_management' | 'individual_landlord';
 
 export type MemberRole = 'owner' | 'admin' | 'member';
 
-export type SubscriptionPlan = 'free' | 'pro' | 'team';
+export type SubscriptionPlan = 'free' | 'essential' | 'pro' | 'portfolio' | 'team';
 
 export type SubscriptionStatus = 'active' | 'canceled' | 'past_due' | 'trialing';
 

@@ -1,7 +1,10 @@
 'use server';
 
 import { redirect } from 'next/navigation';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
+import { getAppUrl } from '@/lib/auth/app-url';
+import {
+  createServerSupabaseClient,
+} from '@/lib/supabase/server';
 
 export async function login(formData: FormData) {
   const email = formData.get('email') as string;
@@ -15,7 +18,16 @@ export async function login(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    const message = error.code === 'email_not_confirmed'
+      ? 'Confirm your email using the link in your inbox, then log in.'
+      : 'Could not log in. Check your email and password and try again.';
+    redirect(`/login?error=${encodeURIComponent(message)}`);
+  }
+
+  const { error: setupError } = await supabase.rpc('ensure_my_workspace');
+  if (setupError) {
+    await supabase.auth.signOut();
+    redirect('/login?error=Account%20setup%20could%20not%20finish.%20Please%20try%20logging%20in%20again.');
   }
 
   redirect('/dashboard');
@@ -32,29 +44,25 @@ export async function signup(formData: FormData) {
     email,
     password,
     options: {
+      emailRedirectTo: `${getAppUrl()}/auth/callback`,
       data: {
-                name,
+        name,
       },
     },
   });
 
   if (authError) {
-    return { error: authError.message };
+    redirect('/signup?error=signup-failed');
   }
 
-  if (authData.user) {
-    const { error: orgError } = await supabase.from('organizations').insert({
-      name: `${name}'s Organization`,
-      type: 'individual_landlord',
-    }).select().single();
+  if (!authData.session) {
+    redirect('/login?message=confirm-email');
+  }
 
-    if (!orgError && authData.user) {
-      await supabase.from('organization_members').insert({
-        organization_id: (await supabase.from('organizations').select('id').order('created_at', { ascending: false }).limit(1).single()).data?.id,
-        user_id: authData.user.id,
-        role: 'owner',
-      });
-    }
+  const { error: setupError } = await supabase.rpc('ensure_my_workspace');
+  if (setupError) {
+    await supabase.auth.signOut();
+    redirect('/login?error=Account%20setup%20could%20not%20finish.%20Please%20try%20logging%20in%20again.');
   }
 
   redirect('/dashboard');
@@ -64,4 +72,43 @@ export async function logout() {
   const supabase = await createServerSupabaseClient();
   await supabase.auth.signOut();
   redirect('/');
+}
+
+export async function requestPasswordReset(formData: FormData) {
+  const email = String(formData.get('email') || '').trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    redirect('/forgot-password?error=Enter%20a%20valid%20email%20address.');
+  }
+  const supabase = await createServerSupabaseClient();
+  await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${getAppUrl()}/auth/callback?next=/reset-password`,
+  });
+  // Keep the response identical for unknown accounts and provider failures.
+  redirect('/forgot-password?sent=1');
+}
+
+export async function updatePassword(formData: FormData) {
+  const password = String(formData.get('password') || '');
+  const confirmation = String(formData.get('confirmation') || '');
+  if (password.length < 8 || password !== confirmation) {
+    redirect('/reset-password?error=Use%20at%20least%208%20characters%20and%20matching%20passwords.');
+  }
+  const supabase = await createServerSupabaseClient();
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) redirect('/forgot-password?error=Request%20a%20new%20reset%20link.');
+  const { error } = await supabase.auth.updateUser({ password });
+  if (error) redirect('/reset-password?error=Could%20not%20update%20your%20password.%20Try%20a%20different%20password%20or%20request%20a%20new%20link.');
+  await supabase.auth.signOut();
+  redirect('/login?message=password-updated');
+}
+
+export async function verifyPasswordRecovery(formData: FormData) {
+  const tokenHash = String(formData.get('token_hash') || '');
+  if (!/^(?:pkce_)?[a-f0-9]{40,128}$/i.test(tokenHash)) {
+    redirect('/forgot-password?error=This%20reset%20link%20is%20invalid.%20Request%20a%20new%20one.');
+  }
+  const supabase = await createServerSupabaseClient();
+  const { error } = await supabase.auth.verifyOtp({ token_hash: tokenHash, type: 'recovery' });
+  if (error) redirect('/forgot-password?error=This%20reset%20link%20has%20expired%20or%20was%20already%20used.%20Request%20a%20new%20one.');
+  redirect('/reset-password');
 }

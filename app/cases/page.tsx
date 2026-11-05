@@ -26,11 +26,11 @@ export default async function CasesPage() {
     <main className="flex-1">
       <section className="border-b border-gray-200 py-12">
         <Container>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h1 className="text-4xl font-bold">Cases</h1>
+              <h1 className="text-3xl font-bold sm:text-4xl">Cases</h1>
               <p className="mt-2 text-gray-600">
-                Manage your eviction, repair/remedy, and small claims cases
+                Manage your eviction and small claims cases
               </p>
             </div>
             <Button asChild>
@@ -51,8 +51,8 @@ export default async function CasesPage() {
                 <Link key={caseItem.id} href={`/cases/${caseItem.id}`}>
                   <Card className="border-gray-200 transition-shadow hover:shadow-md">
                     <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <CardTitle className="text-lg">{caseItem.title}</CardTitle>
+                      <div className="flex items-start justify-between gap-3">
+                        <CardTitle className="min-w-0 text-lg">{caseItem.title}</CardTitle>
                         <span
                           className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
                             caseItem.status === 'draft'

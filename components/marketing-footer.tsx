@@ -29,7 +29,7 @@ export function MarketingFooter() {
             <div className="col-span-2">
               <Logo variant="full" href="/" />
               <p className="mt-4 text-sm text-gray-600">
-                Court-ready packets for Texas Justice Court workflows.
+                Factual records and official resources for Texas Justice Court matters.
               </p>
             </div>
             <div>

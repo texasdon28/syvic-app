@@ -12,7 +12,7 @@ export default function PrivacyPage() {
           <Container>
             <div className="mx-auto max-w-3xl">
               <h1 className="text-5xl font-bold">Privacy Policy</h1>
-              <p className="mt-6 text-sm text-gray-600">Last updated: January 2024</p>
+              <p className="mt-6 text-sm text-gray-600">Preview policy updated: November 1, 2026. Policy review remains pending before public launch.</p>
             </div>
           </Container>
         </section>
@@ -23,7 +23,7 @@ export default function PrivacyPage() {
               <div>
                 <h2 className="text-2xl font-semibold text-black">1. Information We Collect</h2>
                 <p className="mt-4">
-                  We collect information you provide directly, including account information, case data, and uploaded documents. We also collect usage data and analytics to improve the service.
+                  The preview stores account details, facts and records you enter, contact messages, billing identifiers, subscription status, and document-generation usage. Evidence indexes contain descriptions, not attached evidence files. Avoid entering identification numbers or unnecessary sensitive information.
                 </p>
               </div>
 
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
               <div>
                 <h2 className="text-2xl font-semibold text-black">3. Data Security</h2>
                 <p className="mt-4">
-                  We implement industry-standard security measures to protect your data. All data is encrypted in transit and at rest. We use secure, SOC 2 compliant infrastructure.
+                  Accounts use sign-in and workspace access controls. No security certification, independent security audit, or guarantee of absolute security is claimed for SYVIC. Provider controls are not certification of this application.
                 </p>
               </div>
 
@@ -51,14 +51,14 @@ export default function PrivacyPage() {
               <div>
                 <h2 className="text-2xl font-semibold text-black">5. Third-Party Services</h2>
                 <p className="mt-4">
-                  We use third-party services for payment processing (Stripe), hosting (Vercel/Supabase), and analytics. These services have their own privacy policies.
+                  SYVIC uses Vercel for hosting, Supabase for authentication and storage of application records, Resend for account confirmation and password-reset emails, and Stripe for test billing. These providers have their own privacy policies. Live payments remain disabled.
                 </p>
               </div>
 
               <div>
                 <h2 className="text-2xl font-semibold text-black">6. Your Rights</h2>
                 <p className="mt-4">
-                  You have the right to access, correct, or delete your personal information. You may export your data or close your account at any time.
+                  Contact us with requests concerning your personal information. Packet PDF downloads are available according to your subscription and prior generated versions; bulk account export and account deletion are not currently self-service features. This does not limit rights available under applicable law.
                 </p>
               </div>
 

@@ -40,7 +40,7 @@ export default function TermsPage() {
               <div>
                 <h2 className="text-2xl font-semibold text-black">3. No Legal Advice</h2>
                 <p className="mt-4">
-                  SYVIC does not provide legal advice. The information and tools provided do not constitute legal advice and should not be relied upon as a substitute for consultation with a licensed attorney.
+                  SYVIC is not a law firm and does not provide legal advice or legal representation. Our software, documents, and information are not a substitute for the advice of an attorney.
                 </p>
                 <p className="mt-4">
                   Use of SYVIC does not create an attorney-client relationship. You should always consult with legal counsel for advice specific to your situation.
@@ -64,7 +64,7 @@ export default function TermsPage() {
               <div>
                 <h2 className="text-2xl font-semibold text-black">6. Payment and Billing</h2>
                 <p className="mt-4">
-                  Paid subscriptions are billed monthly. You may cancel at any time. Cancellations take effect at the end of the current billing period.
+                  No payments are collected during the controlled beta, and paid subscriptions are not available for purchase. Planned subscriptions include monthly and annual billing, with monthly document allowances that do not roll over. If paid subscriptions become available, the applicable price and billing interval will be displayed before purchase. No purchase is required to save and review records; new beta accounts do not include PDF or print export credits.
                 </p>
               </div>
 

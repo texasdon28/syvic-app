@@ -37,10 +37,10 @@ export default function AboutPage() {
               <div>
                 <h2 className="text-2xl font-semibold text-black">What We Do</h2>
                 <p className="mt-4">
-                  SYVIC provides tools for organizing evidence, tracking deadlines, and generating court-ready document packets for eviction, repair/remedy, and small claims cases in Texas Justice Court.
+                  SYVIC provides factual record organization, PDF packets, and links to official court resources. Legal notice and petition preparation remain unavailable pending independent template and product-compliance review.
                 </p>
                 <p className="mt-4">
-                  We compile procedural information from publicly available sources, including Texas statutes and Rules of Civil Procedure. All deadline calculations and checklists are provided as informational resources only and should be verified with legal counsel.
+                  We link to official court resources and provide a general preparation checklist. SYVIC does not calculate deadlines or determine whether a customer may file.
                 </p>
               </div>
 
@@ -57,17 +57,17 @@ export default function AboutPage() {
               <div>
                 <h2 className="text-2xl font-semibold text-black">Why Texas Justice Court?</h2>
                 <p className="mt-4">
-                  Texas Justice Courts handle over 6 million cases annually, including evictions, small claims, and repair/remedy proceedings. These cases follow specific procedural requirements that can be difficult to track manually.
+                  Our first guided intake is for Harris County residential landlord records. Existing general and small-claims workspaces can store factual records; legal small-claims preparation and repair/remedy workflows are not part of this release.
                 </p>
                 <p className="mt-4">
-                  We started with Texas because of the volume of cases and the clear procedural structure. Our goal is to help property managers and landlords present organized, compliant case packets to the court.
+                  Our goal is to help people keep accurate, organized records. We do not promise that a packet is legally sufficient, suitable for filing, or accepted by a court.
                 </p>
               </div>
 
               <div>
                 <h2 className="text-2xl font-semibold text-black">Our Approach to Compliance</h2>
                 <p className="mt-4">
-                  We take compliance seriously. SYVIC is designed to be a neutral procedural tool. We provide deadline information with statutory citations. We generate document organization structures. We never suggest legal strategy or provide case-specific legal advice.
+                  SYVIC is not a law firm. We organize user-entered records and link to official resources. We do not select legal strategy, determine filing eligibility, or provide case-specific legal advice.
                 </p>
                 <p className="mt-4">
                   All procedural information should be verified independently before relying on it for court filings or legal proceedings.

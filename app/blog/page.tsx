@@ -1,85 +1,12 @@
-import Link from 'next/link';
 import { Container } from '@/components/container';
 import { MarketingHeader } from '@/components/marketing-header';
 import { MarketingFooter } from '@/components/marketing-footer';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-
-const posts = [
-  {
-    title: 'Understanding Texas Eviction Deadlines',
-    description: 'A comprehensive guide to notice periods, hearing timelines, and post-judgment waiting periods for Texas forcible detainer cases.',
-    slug: 'texas-eviction-deadlines',
-    date: '2024-01-15',
-  },
-  {
-    title: 'Organizing Evidence for Repair and Remedy Claims',
-    description: 'Best practices for documenting habitability issues, repair requests, and landlord-tenant communications.',
-    slug: 'organizing-repair-remedy-evidence',
-    date: '2024-01-10',
-  },
-  {
-    title: 'Small Claims in Texas Justice Court: A Procedural Overview',
-    description: 'What you need to know about filing, service, and default judgment procedures in Texas small claims cases.',
-    slug: 'small-claims-procedural-overview',
-    date: '2024-01-05',
-  },
-];
+import { officialSources, sourceCheckedOn } from '@/lib/documents/catalog';
+import { ExternalLink } from 'lucide-react';
 
 export default function BlogPage() {
-  return (
-    <div className="flex min-h-screen flex-col">
-      <MarketingHeader />
-
-      <main className="flex-1">
-        <section className="border-b border-gray-200 py-20">
-          <Container>
-            <div className="mx-auto max-w-2xl text-center">
-              <h1 className="text-5xl font-bold">Resources</h1>
-              <p className="mt-6 text-lg text-gray-600">
-                Procedural guides and best practices for Texas Justice Court workflows.
-              </p>
-            </div>
-          </Container>
-        </section>
-
-        <section className="py-20">
-          <Container size="md">
-            <div className="space-y-8">
-              {posts.map((post) => (
-                <Card key={post.slug} className="border-gray-200">
-                  <CardHeader>
-                    <CardTitle>
-                      <Link href={`/blog/${post.slug}`} className="hover:underline">
-                        {post.title}
-                      </Link>
-                    </CardTitle>
-                    <CardDescription>{post.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-500">
-                        {new Date(post.date).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                        })}
-                      </span>
-                      <Link
-                        href={`/blog/${post.slug}`}
-                        className="text-sm font-medium hover:underline"
-                      >
-                        Read more →
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </Container>
-        </section>
-      </main>
-
-      <MarketingFooter />
-    </div>
-  );
+  return <div className="flex min-h-screen flex-col"><MarketingHeader /><main className="flex-1 py-10"><Container>
+    <h1 className="text-3xl font-bold">Official resources</h1><p className="mt-4 max-w-3xl text-sm text-gray-600">External resources, not personalized legal advice. SYVIC does not determine which form, deadline, or legal procedure applies to your case.</p>
+    <ul className="mt-8 max-w-3xl divide-y border-y">{Object.values(officialSources).map(source => <li key={source.url} className="py-5"><a href={source.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm underline">{source.title}<ExternalLink className="h-4 w-4 shrink-0" /></a></li>)}</ul><p className="mt-6 text-sm text-gray-600">Source links checked {sourceCheckedOn}; this is not attorney approval. Verify current requirements directly with the source and a licensed attorney.</p>
+  </Container></main><MarketingFooter /></div>;
 }

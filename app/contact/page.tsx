@@ -9,17 +9,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Container } from '@/components/container';
 import { MarketingHeader } from '@/components/marketing-header';
 import { MarketingFooter } from '@/components/marketing-footer';
-import { useToast } from '@/hooks/use-toast';
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  const [result, setResult] = useState('');
+  const [failed, setFailed] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
+    setResult('');
+    setFailed(false);
 
-    const formData = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
     const data = {
       name: formData.get('name') as string,
       email: formData.get('email') as string,
@@ -35,20 +38,14 @@ export default function ContactPage() {
       });
 
       if (response.ok) {
-        toast({
-          title: 'Message sent',
-          description: 'Thank you for reaching out. We\'ll get back to you soon.',
-        });
-        e.currentTarget.reset();
+        setResult('Your message was received. No response time is guaranteed.');
+        form.reset();
       } else {
         throw new Error('Failed to send message');
       }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'Failed to send message. Please try again.',
-        variant: 'destructive',
-      });
+      setFailed(true);
+      setResult('Could not send your message. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -83,21 +80,21 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-semibold">Support</h3>
                     <p className="mt-2 text-sm text-gray-600">
-                      For technical support and account questions, Pro and Team subscribers receive priority assistance.
+                      Contact us about technical or account questions. Priority support and guaranteed response times are not included in the preview.
                     </p>
                   </div>
 
                   <div>
                     <h3 className="font-semibold">Sales</h3>
                     <p className="mt-2 text-sm text-gray-600">
-                      Interested in Team plans or custom solutions for larger property management companies? Let's talk.
+                      Ask about Essential, Pro, or Portfolio. The preview plans differ by monthly document credits, not by legal services or team features.
                     </p>
                   </div>
 
                   <div>
                     <h3 className="font-semibold">Compliance</h3>
                     <p className="mt-2 text-sm text-gray-600">
-                      Questions about how SYVIC handles procedural information or compliance considerations? We're transparent about our approach.
+                      Ask about our product boundaries or report a source issue. We cannot advise on your legal matter, select a notice, or represent you.
                     </p>
                   </div>
                 </div>
@@ -107,10 +104,11 @@ export default function ContactPage() {
                 <CardHeader>
                   <CardTitle>Send us a message</CardTitle>
                   <CardDescription>
-                    Fill out the form below and we'll get back to you within 24 hours.
+                    Product and account inquiries only. Do not send confidential case documents, identification numbers, or requests for legal advice.
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
+                  {result && <p role={failed ? 'alert' : 'status'} className={`mb-4 border-l-4 p-3 text-sm ${failed ? 'border-red-500 bg-red-50' : 'border-emerald-600 bg-emerald-50'}`}>{result}</p>}
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                       <Label htmlFor="name">Name</Label>
