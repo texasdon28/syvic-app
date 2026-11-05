@@ -24,15 +24,17 @@ export const metadata: Metadata = {
     description: 'Factual document organization and official court resources. SYVIC is not a law firm and does not provide legal advice.',
     images: [
       {
-        url: '/brand/syvic-logo.svg',
+        url: '/brand/syvic-share.jpg',
+        alt: 'SYVIC logo',
       },
     ],
   },
   twitter: {
-    card: 'summary_large_image',
+    card: 'summary',
     images: [
       {
-        url: '/brand/syvic-logo.svg',
+        url: '/brand/syvic-share.jpg',
+        alt: 'SYVIC logo',
       },
     ],
   },
